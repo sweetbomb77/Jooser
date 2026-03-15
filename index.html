@@ -421,9 +421,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <script>
 // ============================================================
-// DATA
+// PERSISTENCE — localStorage-backed DB
 // ============================================================
-const DB = {
+const DEFAULTS = {
   admin: { username: 'admin', password: 'admin123' },
   users: [],
   accessCodes: [
@@ -431,10 +431,37 @@ const DB = {
     { code: 'MUSIC001', used: false, usedBy: null },
     { code: 'STREAM42', used: false, usedBy: null },
     { code: 'VIBE2025', used: false, usedBy: null },
-    { code: 'RESET001', used: false, usedBy: null }, // spare for password reset demo
+    { code: 'RESET001', used: false, usedBy: null },
   ],
   artists: [], albums: [], songs: [], playlists: [], recentlyPlayed: [],
 };
+
+function loadDB() {
+  try {
+    const saved = localStorage.getItem('jooser_db');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return Object.assign({}, DEFAULTS, parsed);
+    }
+  } catch(e) { console.warn('Failed to load DB from localStorage', e); }
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+
+function saveDB() {
+  try {
+    localStorage.setItem('jooser_db', JSON.stringify(DB));
+  } catch(e) {
+    console.warn('localStorage quota exceeded', e);
+    showStorageWarning();
+  }
+}
+
+function showStorageWarning() {
+  const w = document.getElementById('storage-warning');
+  if (w) { w.classList.remove('hidden'); setTimeout(()=>w.classList.add('hidden'), 7000); }
+}
+
+const DB = loadDB();
 
 // ============================================================
 // STATE
@@ -485,6 +512,7 @@ function doSignup(){
   code.used=true; code.usedBy=u;
   const id='u'+Date.now();
   DB.users.push({id,username:u,password:p,codeUsed:true,type:'user'});
+  saveDB();
   currentUser=u; currentUserType='user'; currentUserId=id;
   enterApp();
 }
@@ -552,6 +580,7 @@ function resetStep1(){
   if(!codeEntry) return showMsg('reset-msg','Invalid or already used access code.');
   // Consume the code
   codeEntry.used=true; codeEntry.usedBy=username+' (reset)';
+  saveDB();
   resetVerifiedUser=user;
   clearMsg('reset-msg');
   document.getElementById('reset-verified-user').textContent=user.username;
@@ -565,6 +594,7 @@ function resetStep2(){
   if(np!==np2) return showMsg('reset-msg','Passwords do not match.');
   if(np.length<6) return showMsg('reset-msg','Password must be at least 6 characters.');
   resetVerifiedUser.password=np;
+  saveDB();
   closeModal('reset-modal');
   showMsg('auth-msg','Password reset! You can now sign in.','ok');
 }
@@ -837,11 +867,13 @@ function createPlaylist(){
   if(!name) return showMsg('create-playlist-msg','Please enter a name.');
   DB.playlists.push({id:'pl'+Date.now(),name,desc:document.getElementById('pl-desc').value.trim(),artUrl:plArtDataUrl,userId:currentUserId,songs:[]});
   plArtDataUrl=null;
+  saveDB();
   closeModal('modal-create-playlist');
   renderPlaylistNav();
 }
 function deletePlaylist(id){
   DB.playlists=DB.playlists.filter(x=>x.id!==id);
+  saveDB();
   renderPlaylistNav();
   navTo('home',document.querySelector('[data-page="home"]'));
 }
@@ -904,12 +936,14 @@ function populateAddToPlaylist(songId){
 function addSongToPlaylist(plId,songId){
   const pl=DB.playlists.find(x=>x.id===plId); if(!pl) return;
   if(!pl.songs.includes(songId)) pl.songs.push(songId);
+  saveDB();
   closeModal('modal-add-to-playlist');
   renderPlaylistNav();
 }
 function removeFromPlaylist(plId,songId){
   const pl=DB.playlists.find(x=>x.id===plId); if(!pl) return;
   pl.songs=pl.songs.filter(x=>x!==songId);
+  saveDB();
   renderPlaylistPage(document.getElementById('main-content'),plId);
 }
 function closeModal(id){document.getElementById(id).classList.add('hidden');}
@@ -947,6 +981,7 @@ function loadSong(id){
   currentSongId=id;
   if(!DB.recentlyPlayed.includes(id)) DB.recentlyPlayed.unshift(id);
   if(DB.recentlyPlayed.length>50) DB.recentlyPlayed.pop();
+  saveDB();
   if(s.audioUrl){
     audio.src=s.audioUrl;
     audio.play().then(()=>{isPlaying=true;updatePlayBtn();}).catch(()=>{isPlaying=false;updatePlayBtn();});
@@ -1111,10 +1146,11 @@ function addArtist(){
   if(!name) return showMsg('art-form-msg','Name is required.');
   DB.artists.push({id:'a'+Date.now(),name,genre,bio,artUrl:artistArtDataUrl,emoji:'🎤'});
   artistArtDataUrl=null;
+  saveDB();
   showMsg('art-form-msg','Artist added!','ok');
   setTimeout(()=>renderAdminArtists(),700);
 }
-function deleteArtist(id){DB.artists=DB.artists.filter(x=>x.id!==id);renderAdminArtists();}
+function deleteArtist(id){DB.artists=DB.artists.filter(x=>x.id!==id);saveDB();renderAdminArtists();}
 
 // ---- ALBUMS (one artist per album) ----
 let albumArtDataUrl=null;
@@ -1154,10 +1190,11 @@ function addAlbum(){
   if(!title) return showMsg('alb-form-msg','Title is required.');
   DB.albums.push({id:'al'+Date.now(),title,artistId,year,artUrl:albumArtDataUrl,emoji:'💿'});
   albumArtDataUrl=null;
+  saveDB();
   showMsg('alb-form-msg','Album added!','ok');
   setTimeout(()=>renderAdminAlbums(),700);
 }
-function deleteAlbum(id){DB.albums=DB.albums.filter(x=>x.id!==id);renderAdminAlbums();}
+function deleteAlbum(id){DB.albums=DB.albums.filter(x=>x.id!==id);saveDB();renderAdminAlbums();}
 
 // ---- SONGS (multi-artist) ----
 let songAudioDataUrl=null,songAudioFileName=null,songArtDataUrl2=null,songDuration=null;
@@ -1208,26 +1245,30 @@ function renderAdminSongs(){
 function previewSongAudio(input){
   if(!input.files[0])return;
   const file=input.files[0];
-  // Revoke any previous blob URL to free memory
-  if(songAudioDataUrl&&songAudioDataUrl.startsWith('blob:')) URL.revokeObjectURL(songAudioDataUrl);
-  const blobUrl=URL.createObjectURL(file);
-  songAudioDataUrl=blobUrl;
   songAudioFileName=file.name;
   songDuration=null;
-  document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">⏳ ${file.name} — reading duration...</div>`;
-  const tmp=new Audio();
-  tmp.preload='metadata';
-  tmp.onloadedmetadata=()=>{
-    songDuration=fmtTime(tmp.duration);
-    document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ ${file.name} (${songDuration})</div>`;
-    URL.revokeObjectURL(tmp.src);
+  // Store as base64 so it persists in localStorage
+  document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">⏳ ${file.name} — loading...</div>`;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    songAudioDataUrl=e.target.result; // base64 data URL — persistable
+    // Read duration via a blob URL (lightweight, just for metadata)
+    const blobUrl=URL.createObjectURL(file);
+    const tmp=new Audio();
+    tmp.preload='metadata';
+    tmp.onloadedmetadata=()=>{
+      songDuration=fmtTime(tmp.duration);
+      document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ ${file.name} (${songDuration})</div>`;
+      URL.revokeObjectURL(blobUrl);
+    };
+    tmp.onerror=()=>{
+      document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ ${file.name}</div>`;
+      URL.revokeObjectURL(blobUrl);
+    };
+    tmp.src=blobUrl;
   };
-  tmp.onerror=()=>{
-    // Still usable even if duration unreadable
-    document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ ${file.name}</div>`;
-    URL.revokeObjectURL(tmp.src);
-  };
-  tmp.src=URL.createObjectURL(file);
+  reader.onerror=()=>{ document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio" style="color:var(--danger)">✗ Failed to read file</div>`; };
+  reader.readAsDataURL(file);
 }
 function previewSongArt(input){if(!input.files[0])return;fileToDataUrl(input.files[0]).then(url=>{songArtDataUrl2=url;document.getElementById('song-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`});}
 function addSong(){
@@ -1248,10 +1289,11 @@ function addSong(){
     duration:songDuration,emoji:'🎵'
   });
   songAudioDataUrl=null;songAudioFileName=null;songArtDataUrl2=null;songDuration=null;
+  saveDB();
   showMsg('songs-form-msg','Song added!','ok');
   setTimeout(()=>renderAdminSongs(),700);
 }
-function deleteSong(id){DB.songs=DB.songs.filter(x=>x.id!==id);renderAdminSongs();}
+function deleteSong(id){DB.songs=DB.songs.filter(x=>x.id!==id);saveDB();renderAdminSongs();}
 
 // ---- CODES ----
 function renderAdminCodes(){
@@ -1279,10 +1321,11 @@ function addCode(){
   if(!code) code='CODE'+Math.random().toString(36).substring(2,7).toUpperCase();
   if(DB.accessCodes.find(x=>x.code===code)) return showMsg('code-form-msg','Code already exists.');
   DB.accessCodes.push({code,used:false,usedBy:null});
+  saveDB();
   showMsg('code-form-msg','Code added: '+code,'ok');
   setTimeout(()=>renderAdminCodes(),700);
 }
-function deleteCode(code){DB.accessCodes=DB.accessCodes.filter(x=>x.code!==code);renderAdminCodes();}
+function deleteCode(code){DB.accessCodes=DB.accessCodes.filter(x=>x.code!==code);saveDB();renderAdminCodes();}
 
 // ---- USERS ----
 function renderAdminUsers(){
@@ -1298,7 +1341,7 @@ function renderAdminUsers(){
       <td><button class="btn btn-danger btn-xs" onclick="deleteUser('${u.id}')">Delete</button></td>
     </tr>`).join('')}</tbody></table>`}`;
 }
-function deleteUser(id){DB.users=DB.users.filter(x=>x.id!==id);renderAdminUsers();}
+function deleteUser(id){DB.users=DB.users.filter(x=>x.id!==id);saveDB();renderAdminUsers();}
 
 // ---- SETTINGS ----
 function renderAdminSettings(){
@@ -1342,6 +1385,7 @@ function changeAdminPassword(){
   document.getElementById('set-admin-cur').value='';
   document.getElementById('set-admin-new').value='';
   document.getElementById('set-admin-new2').value='';
+  saveDB();
   showMsg('settings-msg','Password updated!','ok');
 }
 function changeAdminUsername(){
@@ -1352,6 +1396,7 @@ function changeAdminUsername(){
   DB.admin.username=newUser;
   document.getElementById('set-user-pass').value='';
   document.getElementById('set-user-new').value='';
+  saveDB();
   showMsg('settings-user-msg','Username updated to "'+newUser+'"!','ok');
 }
 function hardResetAdmin(){
@@ -1360,8 +1405,14 @@ function hardResetAdmin(){
   DB.admin.username='admin';
   DB.admin.password='admin123';
   document.getElementById('reset-confirm-word').value='';
+  saveDB();
   showMsg('settings-reset-msg','Admin reset to admin / admin123.','ok');
 }
 </script>
+
+<!-- Storage warning banner -->
+<div id="storage-warning" class="hidden" style="position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:#78350f;color:#fde68a;border:1px solid #d97706;border-radius:10px;padding:.6rem 1.2rem;font-size:.82rem;z-index:9999;text-align:center;max-width:420px">
+  ⚠️ Storage limit reached. Some audio may not be saved. Try removing unused songs.
+</div>
 </body>
 </html>
