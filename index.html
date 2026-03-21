@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jooser</title>
+<title>Jooser v1.1.15</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -229,6 +229,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <div>
     <div class="auth-logo">◆ Jooser</div>
     <div class="auth-tagline">Your music, your world</div>
+    <div style="text-align:center;font-size:.68rem;color:var(--text3);margin-top:-.5rem;margin-bottom:1.5rem;letter-spacing:.05em" id="auth-version"></div>
   </div>
   <div class="auth-card">
     <div id="auth-msg"></div>
@@ -308,7 +309,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <!-- ======= APP ======= -->
 <div id="screen-app" class="screen">
   <div class="app-header">
-    <div class="header-logo">◆ Jooser</div>
+    <div class="header-logo">◆ Jooser <span id="app-version" style="font-size:.65rem;color:var(--text3);font-family:'DM Sans',sans-serif;font-weight:400;letter-spacing:.03em"></span></div>
     <div class="header-search">
       <span class="search-icon">🔍</span>
       <input type="text" id="search-input" placeholder="Search..." style="margin-bottom:0" oninput="doSearch(this.value)">
@@ -438,8 +439,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
 // ============================================================
 // JSONBIN PERSISTENCE
 // ============================================================
+const JOOSER_VERSION = 'v1.1.15';
 const JSONBIN_KEY = '$2a$10$2KPi89nRwLWB9WQ3qMJFwOqVvP0YnUJz2lJba2w/zKflgA/xyW4P6';
-const JSONBIN_BIN = '69b6e9b1b7ec241ddc6ed55c';
+const JSONBIN_BIN = '69be9d24aa77b81da905e626';
 const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN}`;
 const JSONBIN_HEADERS = { 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Versioning':'false' };
  
@@ -505,6 +507,11 @@ function resetSetup(){ location.reload(); }
  
 // Always show auth immediately, then sync in background
 function startup(){
+  // Set version labels
+  const av = document.getElementById('auth-version');
+  const hv = document.getElementById('app-version');
+  if(av) av.textContent = JOOSER_VERSION;
+  if(hv) hv.textContent = JOOSER_VERSION;
   // Show the app right away — no waiting
   showScreen('auth');
   // Then try to load from cloud in background
