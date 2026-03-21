@@ -438,7 +438,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 // ============================================================
 // JSONBIN PERSISTENCE
 // ============================================================
-const JSONBIN_KEY = '$2a$10$ixipsMfRu2xR3cpMeTA8q.6YURPTJYYxgw4ppN8j7X0B8dadGR03W';
+const JSONBIN_KEY = '$2a$10$.bHn9BBjx/zMSR/6vPZd6.T6nF3hOr02JZqO85NZVaeojRb7cqM5u';
 const JSONBIN_BIN = '69b6e9b1b7ec241ddc6ed55c';
 const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN}`;
 const JSONBIN_HEADERS = { 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Versioning':'false' };
@@ -1459,7 +1459,7 @@ function renderAdminSettings(){
       <h3 style="color:#7dd3fc">Cloud Connection (JSONBin)</h3>
       <p style="font-size:.82rem;color:var(--text3);margin-bottom:.75rem">Your data is stored on JSONBin.io and shared across all devices automatically.</p>
       <button class="btn btn-secondary btn-sm" onclick="resetSetup()">Change JSONBin Config</button>
-    </div>\`; 
+    </div>`;
 }
 function changeAdminPassword(){
   const curUser=document.getElementById('set-admin-user').value.trim();
