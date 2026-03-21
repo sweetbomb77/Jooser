@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jooser v1.1.15</title>
+<title>Jooser v1.1.16</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -439,7 +439,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 // ============================================================
 // JSONBIN PERSISTENCE
 // ============================================================
-const JOOSER_VERSION = 'v1.1.15';
+const JOOSER_VERSION = 'v1.1.16';
 const JSONBIN_KEY = '$2a$10$2KPi89nRwLWB9WQ3qMJFwOqVvP0YnUJz2lJba2w/zKflgA/xyW4P6';
 const JSONBIN_BIN = '69be9d24aa77b81da905e626';
 const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN}`;
@@ -479,10 +479,16 @@ async function saveDB(){
       headers: JSONBIN_HEADERS,
       body: JSON.stringify(DB)
     });
-    if(!r.ok) throw new Error(r.status);
+    if(!r.ok){
+      const txt = await r.text();
+      console.error('saveDB HTTP error:', r.status, txt);
+      showToast('Save failed ('+r.status+') — '+txt, 'err');
+      throw new Error(r.status);
+    }
+    showToast('Saved ✓', 'ok');
   } catch(e) {
-    console.warn('saveDB failed:', e);
-    showToast('Save failed — check connection.', 'warn');
+    console.error('saveDB failed:', e);
+    showToast('Save failed — '+e.message, 'err');
   } finally {
     isSyncing = false;
   }
