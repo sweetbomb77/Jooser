@@ -552,10 +552,10 @@ async function saveDB(){
       headers: JSONBIN_HEADERS,
       body: JSON.stringify(DB)
     });
-    if(!r.ok) throw new Error(r.status);
+    if(!r.ok){ const t=await r.text(); throw new Error(r.status+' '+t); }
   } catch(e) {
     console.warn('saveDB failed:', e);
-    showToast('Save failed — check connection.', 'warn');
+    showToast('Save failed.', 'warn');
   } finally {
     isSyncing = false;
   }
@@ -568,37 +568,40 @@ function startPolling(){
       const r = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
       if(!r.ok) return;
       const j = await r.json();
-      if(j.record && j.record.admin && JSON.stringify(j.record) !== JSON.stringify(DB)){
-        Object.assign(DB, j.record);
-        refreshCurrentView();
+      if(j && j.record && j.record.admin){
+        const remote = JSON.stringify(j.record);
+        const local = JSON.stringify(DB);
+        if(remote !== local){ Object.assign(DB, j.record); refreshCurrentView(); }
       }
-    } catch(e) { /* offline — silent */ }
+    } catch(e) {}
   }, 10000);
 }
  
 function resetSetup(){ location.reload(); }
  
-// Always show auth immediately, then sync in background
-function startup(){
-  // Auth screen is already visible — just sync in background
-  fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } })
-    .then(r => r.ok ? r.json() : Promise.reject(r.status))
-    .then(j => {
-      if(j.record && j.record.admin){
+async function startup(){
+  try {
+    const r = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
+    if(r.ok){
+      const j = await r.json();
+      if(j && j.record && j.record.admin){
         Object.assign(DB, j.record);
-        showToast('Synced with cloud ✓', 'ok');
+        showToast('Synced', 'ok');
         refreshCurrentView();
       } else {
-        // Brand new bin — push defaults up
-        return saveDB();
+        await saveDB();
+        showToast('Cloud ready', 'ok');
       }
-    })
-    .then(() => startPolling())
-    .catch(e => {
-      console.warn('Cloud sync failed, running offline:', e);
-      showToast('Running offline — data not synced.', 'warn');
-      startPolling(); // keep trying
-    });
+    } else {
+      // 400/404 = empty bin, push defaults
+      await saveDB();
+      showToast('Cloud ready', 'ok');
+    }
+  } catch(e) {
+    console.warn('startup sync failed:', e);
+    showToast('Running offline', 'warn');
+  }
+  startPolling();
 }
  
 // ============================================================
