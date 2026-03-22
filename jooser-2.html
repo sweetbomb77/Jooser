@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jooser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --accent:#c084fc;--accent2:#a855f7;--accent3:#7c3aed;
+  --text:#f0eeff;--text2:#a09ab8;--text3:#6b6580;
+  --border:rgba(192,132,252,0.15);--border2:rgba(192,132,252,0.3);
+  --success:#4ade80;--danger:#f87171;--warn:#fbbf24;
+  --radius:12px;--radius-sm:8px;
+  --header-h:56px;--player-h:72px;--bottom-nav-h:60px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+.hidden{display:none!important}
+
+/* TOAST */
+.toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);padding:.6rem 1.25rem;border-radius:10px;font-size:.82rem;z-index:9999;text-align:center;max-width:90vw;pointer-events:none;white-space:nowrap}
+.toast-ok{background:rgba(74,222,128,.15);color:var(--success);border:1px solid rgba(74,222,128,.3)}
+.toast-warn{background:rgba(251,191,36,.1);color:var(--warn);border:1px solid rgba(251,191,36,.25)}
+.toast-err{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
+
+.screen{display:none;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+.screen.active{display:flex}
+
+/* ── AUTH ── */
+#screen-auth{align-items:center;justify-content:center;padding:1.5rem;position:relative;overflow:hidden auto}
+#screen-auth::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,0.18) 0%,transparent 70%);top:-150px;left:50%;transform:translateX(-50%);pointer-events:none}
+.auth-logo{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:var(--accent);letter-spacing:-1px;margin-bottom:.2rem;text-align:center}
+.auth-tagline{color:var(--text3);font-size:.78rem;margin-bottom:1.5rem;letter-spacing:.06em;text-transform:uppercase;text-align:center}
+.auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:1.5rem;width:100%;max-width:400px;position:relative;z-index:1}
+.auth-tabs{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius-sm);padding:4px;margin-bottom:1.25rem}
+.auth-tab{flex:1;padding:.55rem;text-align:center;border-radius:6px;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--text2);transition:all .2s;border:none;background:none;min-height:44px}
+.auth-tab.active{background:var(--accent3);color:white}
+.auth-panel{display:none}.auth-panel.active{display:block}
+label{display:block;font-size:.75rem;color:var(--text3);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.05em}
+input[type=text],input[type=password]{width:100%;padding:.75rem .9rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;transition:border-color .2s;margin-bottom:.85rem;-webkit-appearance:none;appearance:none}
+input[type=text]:focus,input[type=password]:focus{border-color:var(--accent2)}
+textarea{width:100%;padding:.75rem .9rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;resize:vertical;min-height:70px}
+textarea:focus{border-color:var(--accent2)}
+select{width:100%;padding:.75rem .9rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none}
+select:focus{border-color:var(--accent2)}
+.btn{padding:.75rem 1rem;border-radius:var(--radius-sm);font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;border:none;transition:all .18s;letter-spacing:.03em;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:44px;-webkit-tap-highlight-color:transparent}
+.btn-full{width:100%}
+.btn-primary{background:var(--accent3);color:white}
+.btn-primary:hover,.btn-primary:active{background:var(--accent2)}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+.btn-secondary:hover,.btn-secondary:active{border-color:var(--border2);color:var(--text)}
+.btn-danger{background:rgba(127,29,29,.6);color:#fca5a5;border:1px solid rgba(248,113,113,.2)}
+.btn-danger:active{background:rgba(153,27,27,.8)}
+.btn-warn{background:rgba(120,80,0,.6);color:#fde68a;border:1px solid rgba(251,191,36,.25)}
+.btn-ghost{background:none;border:none;color:var(--text2);cursor:pointer;padding:.35rem .6rem;border-radius:6px;font-size:.82rem;font-family:'DM Sans',sans-serif;min-height:36px;-webkit-tap-highlight-color:transparent}
+.btn-ghost:active{color:var(--text);background:var(--bg3)}
+.btn-sm{padding:.4rem .75rem;font-size:.8rem;min-height:36px}
+.btn-xs{padding:.3rem .6rem;font-size:.75rem;font-family:'DM Sans',sans-serif;border-radius:5px;min-height:32px}
+.msg{font-size:.82rem;padding:.5rem .75rem;border-radius:var(--radius-sm);margin-bottom:.75rem;text-align:center}
+.msg-err{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
+.msg-ok{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.msg-warn{background:rgba(251,191,36,.08);color:var(--warn);border:1px solid rgba(251,191,36,.2)}
+.divider{text-align:center;color:var(--text3);font-size:.75rem;margin:.85rem 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
+.divider::before{left:0}.divider::after{right:0}
+.alert-info{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);color:#7dd3fc;padding:.55rem .9rem;border-radius:var(--radius-sm);margin-bottom:.85rem;font-size:.82rem}
+
+/* ── APP LAYOUT ── */
+#screen-app{height:100vh;height:100dvh}
+.app-header{height:var(--header-h);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;gap:.75rem}
+.header-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--accent);white-space:nowrap}
+.header-search{flex:1;position:relative}
+.header-search input{margin-bottom:0;padding-left:2rem;font-size:.88rem}
+.search-icon{position:absolute;left:.65rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:.88rem;pointer-events:none}
+.header-user{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.user-badge{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:.25rem .65rem;font-size:.72rem;color:var(--accent);white-space:nowrap}
+.app-body{display:flex;flex:1;min-height:0;overflow:hidden}
+
+/* ── SIDEBAR (desktop only) ── */
+.sidebar{width:210px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sidebar-scroll{flex:1;overflow-y:auto;padding:.75rem .75rem 1rem}
+.sidebar-scroll::-webkit-scrollbar{width:4px}
+.sidebar-scroll::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+.sidebar-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:.5rem .5rem .2rem}
+.nav-item{display:flex;align-items:center;gap:.55rem;padding:.5rem .65rem;border-radius:var(--radius-sm);cursor:pointer;font-size:.83rem;color:var(--text2);transition:all .15s;border:none;background:none;text-align:left;width:100%;min-height:40px;-webkit-tap-highlight-color:transparent}
+.nav-item:hover,.nav-item:active{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(124,58,237,.2);color:var(--accent)}
+.nav-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
+.pl-nav-row{display:flex;align-items:center;width:100%;gap:.3rem}
+.pl-nav-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.pl-del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.72rem;padding:.2rem .35rem;border-radius:3px;flex-shrink:0;min-height:28px;min-width:28px}
+.pl-del-btn:active{color:var(--danger)}
+
+/* ── BOTTOM NAV (mobile only) ── */
+.bottom-nav{display:none;height:var(--bottom-nav-h);background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;align-items:stretch;padding:0 .25rem;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;cursor:pointer;border:none;background:none;color:var(--text3);font-size:.6rem;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent;transition:color .15s;padding:.5rem 0;min-height:44px}
+.bottom-nav-item.active{color:var(--accent)}
+.bottom-nav-icon{font-size:1.35rem;line-height:1}
+
+/* ── MAIN CONTENT ── */
+.main-content{flex:1;padding:1rem 1rem 1.25rem;overflow-y:auto;background:var(--bg);min-width:0}
+.main-content::-webkit-scrollbar{width:4px}
+.main-content::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── PLAYER BAR ── */
+.player-bar{display:flex;align-items:center;padding:0 1rem;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;gap:.75rem;height:var(--player-h)}
+.player-info{display:flex;align-items:center;gap:.6rem;min-width:0;flex:1;overflow:hidden}
+.player-cover{width:40px;height:40px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;overflow:hidden}
+.player-cover img{width:100%;height:100%;object-fit:cover}
+.player-meta{min-width:0;flex:1}
+.player-title{font-size:.83rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-artist{font-size:.7rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-center{display:flex;flex-direction:column;align-items:center;gap:.25rem;flex:1;min-width:0}
+.player-controls{display:flex;align-items:center;gap:.25rem}
+.ctrl-btn{background:none;border:none;color:var(--text2);cursor:pointer;padding:.3rem;border-radius:50%;transition:color .15s;font-size:1.05rem;line-height:1;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.ctrl-btn:hover,.ctrl-btn:active{color:var(--accent)}
+.ctrl-btn.active-ctrl{color:var(--accent)}
+.play-btn{width:38px;height:38px;background:var(--accent3);border-radius:50%;color:white;font-size:.95rem}
+.play-btn:hover,.play-btn:active{background:var(--accent2)!important;color:white!important}
+.progress-wrap{width:100%;display:flex;flex-direction:column;gap:3px}
+.progress-bar{width:100%;height:4px;background:var(--bg4);border-radius:2px;cursor:pointer}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .25s linear}
+.progress-times{display:flex;justify-content:space-between;font-size:.6rem;color:var(--text3)}
+.player-right{display:flex;align-items:center;gap:.3rem;flex-shrink:0}
+
+/* ── CONTENT STYLES ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+.section-title{font-size:1.35rem;font-weight:700}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.75rem}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem;cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent}
+.card:active{border-color:var(--border2);background:var(--bg3)}
+.card-art{width:100%;aspect-ratio:1;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative;overflow:hidden}
+.card-art img{width:100%;height:100%;object-fit:cover}
+.play-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;font-size:1.6rem}
+.card:hover .play-overlay{display:flex}
+.card-name{font-size:.83rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-meta{font-size:.7rem;color:var(--text3);margin-top:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Song rows — touch friendly */
+.song-row{display:flex;align-items:center;gap:.6rem;padding:.65rem .5rem;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.song-row:active,.song-row.playing{background:rgba(124,58,237,.15)}
+.song-num{width:20px;text-align:center;font-size:.76rem;color:var(--text3);flex-shrink:0}
+.song-thumb{width:42px;height:42px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;overflow:hidden}
+.song-thumb img{width:100%;height:100%;object-fit:cover}
+.song-info{flex:1;min-width:0}
+.song-title{font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-artist{font-size:.73rem;color:var(--text3)}
+/* On mobile: always show + playlist btn, not hover-only */
+.song-actions{display:flex;gap:.25rem;flex-shrink:0}
+.song-dur{font-size:.73rem;color:var(--text3);flex-shrink:0}
+.playing-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.back-btn{background:none;border:none;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:.35rem;font-size:.82rem;padding:.4rem 0;margin-bottom:1rem;font-family:'DM Sans',sans-serif;min-height:36px}
+.back-btn:active{color:var(--text)}
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text3)}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+
+/* ARTIST CHIPS */
+.artist-chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}
+.artist-chip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:.2rem .6rem;font-size:.73rem;color:var(--accent);cursor:pointer}
+
+/* ── ADMIN ── */
+#screen-admin{height:100vh;height:100dvh}
+.admin-header{height:var(--header-h);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.admin-badge{background:rgba(248,113,113,.15);color:var(--danger);border:1px solid rgba(248,113,113,.2);border-radius:20px;padding:.18rem .55rem;font-size:.7rem}
+.admin-body{display:flex;flex:1;min-height:0}
+.admin-sidebar{width:190px;background:var(--bg2);border-right:1px solid var(--border);padding:.75rem;display:flex;flex-direction:column;gap:.2rem;flex-shrink:0;overflow-y:auto}
+.admin-content{flex:1;padding:1.1rem 1.25rem;overflow-y:auto;min-width:0}
+.admin-content::-webkit-scrollbar{width:4px}
+.admin-content::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+.admin-panel{display:none}.admin-panel.active{display:block}
+table{width:100%;border-collapse:collapse}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:.45rem .6rem;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:.55rem .6rem;font-size:.82rem;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+tr:active td{background:rgba(255,255,255,.02)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.form-group{display:flex;flex-direction:column;gap:.35rem}
+.form-group.full{grid-column:1/-1}
+.form-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-bottom:1.1rem}
+.form-card h3{margin-bottom:.8rem;font-size:.95rem}
+.tag{display:inline-block;padding:.18rem .55rem;border-radius:20px;font-size:.7rem;font-weight:500}
+.tag-active{background:rgba(74,222,128,.1);color:var(--success)}
+.tag-used{background:rgba(251,191,36,.1);color:var(--warn)}
+.tag-user{background:rgba(56,189,248,.1);color:#7dd3fc}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem}
+.stat-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--accent)}
+.stat-label{font-size:.7rem;color:var(--text3);margin-top:.1rem}
+.code-box{font-family:monospace;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.28rem .6rem;font-size:.8rem;color:var(--accent);letter-spacing:.05em}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:1.1rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.upload-zone:active{border-color:var(--accent);background:rgba(124,58,237,.05)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2}
+.upload-zone-label{font-size:.83rem;color:var(--text3)}
+.upload-zone-sub{font-size:.72rem;color:var(--text3);margin-top:.2rem}
+.upload-preview{width:70px;height:70px;border-radius:7px;object-fit:cover;border:1px solid var(--border);display:block;margin:.45rem auto 0}
+.upload-preview-audio{font-size:.75rem;color:var(--success);margin-top:.35rem}
+
+/* Multi-artist picker */
+.artist-picker{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem;display:flex;flex-direction:column;gap:.3rem;max-height:160px;overflow-y:auto}
+.artist-picker-item{display:flex;align-items:center;gap:.5rem;padding:.4rem;border-radius:5px;cursor:pointer;font-size:.85rem;color:var(--text2);min-height:40px}
+.artist-picker-item:active{background:rgba(255,255,255,.05)}
+.artist-picker-item.selected{background:rgba(124,58,237,.2);color:var(--accent)}
+.artist-picker-item input[type=checkbox]{accent-color:var(--accent3);width:16px;height:16px;flex-shrink:0}
+.selected-artists-preview{display:flex;flex-wrap:wrap;gap:.35rem;min-height:22px;margin-top:.35rem}
+.sel-chip{background:rgba(124,58,237,.2);border:1px solid var(--border2);border-radius:20px;padding:.2rem .6rem;font-size:.73rem;color:var(--accent);display:flex;align-items:center;gap:.3rem}
+.sel-chip-x{cursor:pointer;opacity:.7;font-size:.68rem;min-width:20px;min-height:20px;display:flex;align-items:center;justify-content:center}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:flex-end;justify-content:center;z-index:999;padding:0}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:1.5rem;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding-bottom:calc(1.5rem + env(safe-area-inset-bottom))}
+.modal h3{margin-bottom:1rem;font-size:1rem}
+.modal::-webkit-scrollbar{width:4px}
+.modal::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+.modal-handle{width:40px;height:4px;background:var(--bg4);border-radius:2px;margin:0 auto 1.25rem}
+
+/* PLAYLIST */
+.pl-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.pl-cover{width:100px;height:100px;border-radius:var(--radius);background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;overflow:hidden}
+.pl-cover img{width:100%;height:100%;object-fit:cover}
+
+/* RESET PASSWORD MODAL */
+.reset-step{display:none}.reset-step.active{display:block}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:640px){
+  /* Hide desktop sidebar, show bottom nav */
+  .sidebar{display:none}
+  .bottom-nav{display:flex}
+  /* Hide desktop player right section to save space */
+  .player-right{display:none}
+  /* Compact header on mobile */
+  .header-search{max-width:none}
+  .user-badge{display:none}
+  /* Show sign out as icon */
+  .signout-label{display:none}
+  /* Compact grid */
+  .grid-cards{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.6rem}
+  /* Full-width cards look better */
+  .section-title{font-size:1.2rem}
+  /* Admin: stack sidebar on top */
+  .admin-body{flex-direction:column}
+  .admin-sidebar{width:100%;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:.5rem;height:auto;border-right:none;border-bottom:1px solid var(--border);gap:.25rem;min-height:52px}
+  .admin-sidebar .sidebar-label{display:none}
+  .admin-sidebar .nav-item{white-space:nowrap;flex-shrink:0;font-size:.78rem;padding:.4rem .65rem;min-height:36px}
+  .admin-content{padding:.85rem 1rem}
+  /* Stack form grid on mobile */
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:1}
+  /* Stat row 2 cols on mobile */
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  /* Player bar compact */
+  .player-bar{padding:0 .75rem;gap:.5rem}
+  .player-info{max-width:130px}
+  /* Table scroll */
+  .admin-content table{font-size:.78rem}
+  td,th{padding:.4rem .5rem}
+  /* Modal full width bottom sheet */
+  .modal{border-radius:20px 20px 0 0}
+  /* Toast above bottom nav */
+  .toast{bottom:calc(var(--bottom-nav-h) + var(--player-h) + .75rem)}
+}
+
+@media(min-width:641px){
+  /* Desktop: sidebar visible, no bottom nav */
+  .bottom-nav{display:none!important}
+  /* Desktop: hover shows song actions */
+  .song-actions{display:none}
+  .song-row:hover .song-actions{display:flex}
+  /* Desktop: modal centered not bottom sheet */
+  .modal-overlay{align-items:center;padding:1rem}
+  .modal{border-radius:20px;padding-bottom:1.5rem}
+  .modal-handle{display:none}
+  /* Desktop: toast near bottom center */
+  .toast{bottom:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ======= AUTH ======= -->
+<div id="screen-auth" class="screen active">
+  <div>
+    <div class="auth-logo">◆ Jooser</div>
+    <div class="auth-tagline">Your music, your world</div>
+  </div>
+  <div class="auth-card">
+    <div id="auth-msg"></div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+      <button class="auth-tab" onclick="switchTab('guest')">Guest</button>
+    </div>
+    <div id="tab-login" class="auth-panel active">
+      <label>Username</label><input type="text" id="login-user" placeholder="your username">
+      <label>Password</label><input type="password" id="login-pass" placeholder="••••••••">
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+      <div class="divider">or</div>
+      <button class="btn btn-secondary btn-full" onclick="switchTab('guest')">Continue as Guest</button>
+      <div style="text-align:center;margin-top:.85rem;display:flex;justify-content:center;gap:1rem">
+        <button onclick="showAdminLogin()" style="background:none;border:none;color:var(--text3);font-size:.73rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif">Admin Portal</button>
+        <button onclick="showResetModal()" style="background:none;border:none;color:var(--text3);font-size:.73rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif">Forgot password?</button>
+      </div>
+    </div>
+    <div id="tab-signup" class="auth-panel">
+      <label>Username</label><input type="text" id="signup-user" placeholder="choose a username">
+      <label>Password</label><input type="password" id="signup-pass" placeholder="choose a password">
+      <label>Confirm Password</label><input type="password" id="signup-pass2" placeholder="confirm password">
+      <label>Access Code</label><input type="text" id="signup-code" placeholder="enter your access code" style="text-transform:uppercase">
+      <button class="btn btn-primary btn-full" onclick="doSignup()">Create Account</button>
+    </div>
+    <div id="tab-guest" class="auth-panel">
+      <div class="alert-info">Guests must enter a valid access code each visit.</div>
+      <label>Access Code</label><input type="text" id="guest-code" placeholder="enter access code" style="text-transform:uppercase">
+      <button class="btn btn-primary btn-full" onclick="doGuest()">Browse as Guest</button>
+    </div>
+  </div>
+
+  <!-- Admin login -->
+  <div id="admin-login-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h3>Admin Portal</h3>
+      <div id="admin-login-msg"></div>
+      <label>Username</label><input type="text" id="admin-user-input" placeholder="admin">
+      <label>Password</label><input type="password" id="admin-pass-input" placeholder="••••••••">
+      <div style="display:flex;gap:.65rem;margin-top:.5rem">
+        <button class="btn btn-primary" style="flex:1" onclick="doAdminLogin()">Login</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="hideAdminLogin()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset password modal -->
+  <div id="reset-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h3>Reset Password</h3>
+      <div id="reset-msg"></div>
+      <!-- Step 1: enter username + access code -->
+      <div id="reset-step1" class="reset-step active">
+        <p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem">Enter your username and a fresh unused access code to verify your identity.</p>
+        <label>Username</label><input type="text" id="reset-username" placeholder="your username">
+        <label>Access Code (unused)</label><input type="text" id="reset-code" placeholder="XXXXXX" style="text-transform:uppercase">
+        <div style="display:flex;gap:.65rem;margin-top:.25rem">
+          <button class="btn btn-primary" style="flex:1" onclick="resetStep1()">Verify</button>
+          <button class="btn btn-secondary" style="flex:1" onclick="closeModal('reset-modal')">Cancel</button>
+        </div>
+      </div>
+      <!-- Step 2: set new password -->
+      <div id="reset-step2" class="reset-step">
+        <p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem">Identity verified! Set a new password for <strong id="reset-verified-user" style="color:var(--text)"></strong>.</p>
+        <label>New Password</label><input type="password" id="reset-new-pass" placeholder="new password">
+        <label>Confirm Password</label><input type="password" id="reset-confirm-pass" placeholder="confirm password">
+        <div style="display:flex;gap:.65rem;margin-top:.25rem">
+          <button class="btn btn-primary" style="flex:1" onclick="resetStep2()">Reset Password</button>
+          <button class="btn btn-secondary" style="flex:1" onclick="closeModal('reset-modal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= APP ======= -->
+<div id="screen-app" class="screen">
+  <div class="app-header">
+    <div class="header-logo">◆ Jooser</div>
+    <div class="header-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search..." style="margin-bottom:0" oninput="doSearch(this.value)">
+    </div>
+    <div class="header-user">
+      <span id="header-username"></span>
+      <button class="btn btn-secondary btn-sm" onclick="logout()" title="Sign Out">⎋ <span class="signout-label">Sign Out</span></button>
+    </div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <div class="sidebar-scroll" id="app-sidebar">
+        <div class="sidebar-label">Browse</div>
+        <button class="nav-item active" data-page="home" onclick="navTo('home',this)"><span class="nav-icon">🏠</span> Home</button>
+        <button class="nav-item" data-page="artists" onclick="navTo('artists',this)"><span class="nav-icon">🎤</span> Artists</button>
+        <button class="nav-item" data-page="albums" onclick="navTo('albums',this)"><span class="nav-icon">💿</span> Albums</button>
+        <button class="nav-item" data-page="songs" onclick="navTo('songs',this)"><span class="nav-icon">🎵</span> Songs</button>
+        <div class="sidebar-label" style="margin-top:.6rem">Library</div>
+        <button class="nav-item" data-page="recent" onclick="navTo('recent',this)"><span class="nav-icon">🕐</span> Recently Played</button>
+        <div id="playlist-nav"></div>
+        <button class="nav-item" style="color:var(--accent);margin-top:.2rem" onclick="showCreatePlaylist()"><span class="nav-icon">＋</span> New Playlist</button>
+      </div>
+    </div>
+    <div class="main-content" id="main-content"></div>
+  </div>
+  <!-- Bottom nav (mobile only) -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bottom-nav-item active" data-page="home" onclick="mobileNav('home',this)">
+      <span class="bottom-nav-icon">🏠</span><span>Home</span>
+    </button>
+    <button class="bottom-nav-item" data-page="artists" onclick="mobileNav('artists',this)">
+      <span class="bottom-nav-icon">🎤</span><span>Artists</span>
+    </button>
+    <button class="bottom-nav-item" data-page="albums" onclick="mobileNav('albums',this)">
+      <span class="bottom-nav-icon">💿</span><span>Albums</span>
+    </button>
+    <button class="bottom-nav-item" data-page="songs" onclick="mobileNav('songs',this)">
+      <span class="bottom-nav-icon">🎵</span><span>Songs</span>
+    </button>
+    <button class="bottom-nav-item" data-page="library" onclick="mobileNav('library',this)">
+      <span class="bottom-nav-icon">📚</span><span>Library</span>
+    </button>
+  </nav>
+  <div class="player-bar">
+    <div class="player-info">
+      <div class="player-cover" id="player-cover">♪</div>
+      <div class="player-meta">
+        <div class="player-title" id="player-title">No song playing</div>
+        <div class="player-artist" id="player-artist">—</div>
+      </div>
+    </div>
+    <div class="player-center">
+      <div class="player-controls">
+        <button class="ctrl-btn" id="shuffle-btn" onclick="toggleShuffle()" title="Shuffle">⇄</button>
+        <button class="ctrl-btn" onclick="prevSong()">⏮</button>
+        <button class="ctrl-btn play-btn" id="play-btn" onclick="togglePlay()">▶</button>
+        <button class="ctrl-btn" onclick="nextSong()">⏭</button>
+        <button class="ctrl-btn" id="repeat-btn" onclick="toggleRepeat()" title="Repeat">↻</button>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar" onclick="seekTrack(event)">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-times"><span id="time-cur">0:00</span><span id="time-dur">0:00</span></div>
+      </div>
+    </div>
+    <div class="player-right">
+      <button class="btn btn-secondary btn-xs" onclick="showAddToPlaylist()">+ Playlist</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= ADMIN ======= -->
+<div id="screen-admin" class="screen">
+  <div class="admin-header">
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--accent)">◆ Jooser</div>
+      <span style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700">Admin</span>
+      <span class="admin-badge">ADMIN</span>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="adminLogout()">Exit Portal</button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-sidebar">
+      <div class="sidebar-label">Manage</div>
+      <button class="nav-item active" onclick="adminNav('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</button>
+      <button class="nav-item" onclick="adminNav('songs',this)"><span class="nav-icon">🎵</span> Songs</button>
+      <button class="nav-item" onclick="adminNav('albums',this)"><span class="nav-icon">💿</span> Albums</button>
+      <button class="nav-item" onclick="adminNav('artists',this)"><span class="nav-icon">🎤</span> Artists</button>
+      <button class="nav-item" onclick="adminNav('codes',this)"><span class="nav-icon">🔑</span> Access Codes</button>
+      <button class="nav-item" onclick="adminNav('users',this)"><span class="nav-icon">👥</span> Users</button>
+      <button class="nav-item" onclick="adminNav('settings',this)"><span class="nav-icon">⚙️</span> Settings</button>
+    </div>
+    <div class="admin-content">
+      <div id="admin-panel-dashboard" class="admin-panel active"></div>
+      <div id="admin-panel-songs" class="admin-panel"></div>
+      <div id="admin-panel-albums" class="admin-panel"></div>
+      <div id="admin-panel-artists" class="admin-panel"></div>
+      <div id="admin-panel-codes" class="admin-panel"></div>
+      <div id="admin-panel-users" class="admin-panel"></div>
+      <div id="admin-panel-settings" class="admin-panel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="modal-create-playlist" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Create Playlist</h3>
+    <div id="create-playlist-msg"></div>
+    <label>Name</label><input type="text" id="pl-name" placeholder="My Playlist">
+    <label>Description (optional)</label><textarea id="pl-desc" placeholder="A great collection..." style="margin-bottom:.85rem"></textarea>
+    <label>Playlist Art (optional)</label>
+    <div class="upload-zone" style="margin-bottom:.85rem">
+      <input type="file" accept="image/*" id="pl-art-file" onchange="previewPlArt(this)">
+      <div class="upload-zone-label">🖼 Click to upload playlist art</div>
+      <div class="upload-zone-sub">JPG, PNG, WEBP</div>
+      <div id="pl-art-preview"></div>
+    </div>
+    <div style="display:flex;gap:.65rem">
+      <button class="btn btn-primary" style="flex:1" onclick="createPlaylist()">Create</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-create-playlist')">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="modal-add-to-playlist" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Add to Playlist</h3>
+    <div id="add-playlist-list" style="display:flex;flex-direction:column;gap:.45rem;margin-bottom:.85rem"></div>
+    <button class="btn btn-secondary btn-full" onclick="closeModal('modal-add-to-playlist')">Cancel</button>
+  </div>
+</div>
+
+<audio id="audio-player"></audio>
+
+<div id="toast" class="hidden toast"></div>
+
+
+<script>
+// ============================================================
+// JSONBIN PERSISTENCE
+// ============================================================
+const JSONBIN_KEY = '$2a$10$ixipsMfRu2xR3cpMeTA8q.6YURPTJYYxgw4ppN8j7X0B8dadGR03W';
+const JSONBIN_BIN = '69b6e9b1b7ec241ddc6ed55c';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN}`;
+const JSONBIN_HEADERS = { 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Versioning':'false' };
+
+let isSyncing = false;
+
+const DB = {
+  admin: { username: 'admin', password: 'admin123' },
+  users: [],
+  accessCodes: [
+    { code: 'WAVE2024', used: false, usedBy: null },
+    { code: 'MUSIC001', used: false, usedBy: null },
+    { code: 'STREAM42', used: false, usedBy: null },
+    { code: 'VIBE2025', used: false, usedBy: null },
+    { code: 'RESET001', used: false, usedBy: null },
+  ],
+  artists: [], albums: [], songs: [], playlists: [], recentlyPlayed: [],
+};
+
+function showToast(msg, type='ok'){
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.className = 'toast toast-' + type;
+  t.classList.remove('hidden');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.add('hidden'), 5000);
+}
+
+async function saveDB(){
+  if(isSyncing) return;
+  isSyncing = true;
+  try {
+    const r = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: JSONBIN_HEADERS,
+      body: JSON.stringify(DB)
+    });
+    if(!r.ok) throw new Error(r.status);
+  } catch(e) {
+    console.warn('saveDB failed:', e);
+    showToast('Save failed — check connection.', 'warn');
+  } finally {
+    isSyncing = false;
+  }
+}
+
+function startPolling(){
+  setInterval(async () => {
+    if(isSyncing) return;
+    try {
+      const r = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
+      if(!r.ok) return;
+      const j = await r.json();
+      if(j.record && j.record.admin && JSON.stringify(j.record) !== JSON.stringify(DB)){
+        Object.assign(DB, j.record);
+        refreshCurrentView();
+      }
+    } catch(e) { /* offline — silent */ }
+  }, 10000);
+}
+
+function resetSetup(){ location.reload(); }
+
+// Always show auth immediately, then sync in background
+function startup(){
+  // Auth screen is already visible — just sync in background
+  fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } })
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(j => {
+      if(j.record && j.record.admin){
+        Object.assign(DB, j.record);
+        showToast('Synced with cloud ✓', 'ok');
+        refreshCurrentView();
+      } else {
+        // Brand new bin — push defaults up
+        return saveDB();
+      }
+    })
+    .then(() => startPolling())
+    .catch(e => {
+      console.warn('Cloud sync failed, running offline:', e);
+      showToast('Running offline — data not synced.', 'warn');
+      startPolling(); // keep trying
+    });
+}
+
+// ============================================================
+// ============================================================
+// STATE
+// ============================================================
+let currentUser=null, currentUserType=null, currentUserId=null;
+let currentSongId=null;
+let currentQueue=[], currentQueueIdx=-1, originalQueue=[];
+let isPlaying=false, isShuffle=false, isRepeat=false;
+let plArtDataUrl=null;
+let resetVerifiedUser=null; // for password reset flow
+const audio=document.getElementById('audio-player');
+
+// ============================================================
+// AUTH
+// ============================================================
+function switchTab(tab){
+  ['login','signup','guest'].forEach((t,i)=>{
+    document.querySelectorAll('.auth-tab')[i].classList.toggle('active',t===tab);
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+  });
+  clearMsg('auth-msg');
+}
+function showMsg(id,text,type='err'){
+  const el=document.getElementById(id);
+  if(el) el.innerHTML=`<div class="msg msg-${type==='ok'?'ok':type==='warn'?'warn':'err'}">${text}</div>`;
+}
+function clearMsg(id){const el=document.getElementById(id);if(el)el.innerHTML='';}
+
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value;
+  if(!u||!p) return showMsg('auth-msg','Please fill in all fields.');
+  const user=DB.users.find(x=>x.username.toLowerCase()===u.toLowerCase()&&x.password===p);
+  if(!user) return showMsg('auth-msg','Incorrect username or password.');
+  currentUser=user.username; currentUserType='user'; currentUserId=user.id;
+  enterApp();
+}
+function doSignup(){
+  const u=document.getElementById('signup-user').value.trim();
+  const p=document.getElementById('signup-pass').value;
+  const p2=document.getElementById('signup-pass2').value;
+  const c=document.getElementById('signup-code').value.trim().toUpperCase();
+  if(!u||!p||!p2||!c) return showMsg('auth-msg','Please fill in all fields.');
+  if(p!==p2) return showMsg('auth-msg','Passwords do not match.');
+  if(DB.users.find(x=>x.username.toLowerCase()===u.toLowerCase())) return showMsg('auth-msg','Username already taken.');
+  const code=DB.accessCodes.find(x=>x.code===c&&!x.used);
+  if(!code) return showMsg('auth-msg','Invalid or already used access code.');
+  code.used=true; code.usedBy=u;
+  const id='u'+Date.now();
+  DB.users.push({id,username:u,password:p,codeUsed:true,type:'user'});
+  saveDB();
+  currentUser=u; currentUserType='user'; currentUserId=id;
+  enterApp();
+}
+function doGuest(){
+  const c=document.getElementById('guest-code').value.trim().toUpperCase();
+  if(!c) return showMsg('auth-msg','Please enter an access code.');
+  const code=DB.accessCodes.find(x=>x.code===c&&!x.used);
+  if(!code) return showMsg('auth-msg','Invalid or already used access code.');
+  currentUser='Guest'; currentUserType='guest'; currentUserId='guest';
+  enterApp();
+}
+function enterApp(){
+  document.getElementById('header-username').innerHTML=`<span class="user-badge">${currentUserType==='guest'?'👤 Guest':'🎧 '+currentUser}</span>`;
+  showScreen('app');
+  renderPlaylistNav();
+  navTo('home',document.querySelector('[data-page="home"]'));
+  clearMsg('auth-msg');
+}
+function logout(){
+  currentUser=null; currentUserType=null; currentUserId=null;
+  audio.pause(); audio.src=''; isPlaying=false; currentSongId=null; currentQueueIdx=-1;
+  document.getElementById('search-input').value='';
+  showScreen('auth');
+}
+function showAdminLogin(){document.getElementById('admin-login-overlay').classList.remove('hidden');}
+function hideAdminLogin(){document.getElementById('admin-login-overlay').classList.add('hidden');clearMsg('admin-login-msg');}
+function doAdminLogin(){
+  const u=document.getElementById('admin-user-input').value.trim();
+  const p=document.getElementById('admin-pass-input').value;
+  if(u===DB.admin.username&&p===DB.admin.password){
+    hideAdminLogin(); currentUserType='admin';
+    showScreen('admin');
+    adminNav('dashboard',document.querySelector('#screen-admin .nav-item'));
+  } else showMsg('admin-login-msg','Invalid admin credentials.');
+}
+function adminLogout(){currentUserType=null;showScreen('auth');}
+function showScreen(s){
+  document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById('screen-'+s);
+  if(el) el.classList.add('active');
+}
+
+// ============================================================
+// PASSWORD RESET
+// ============================================================
+function showResetModal(){
+  resetVerifiedUser=null;
+  clearMsg('reset-msg');
+  document.getElementById('reset-username').value='';
+  document.getElementById('reset-code').value='';
+  document.getElementById('reset-new-pass').value='';
+  document.getElementById('reset-confirm-pass').value='';
+  document.getElementById('reset-step1').classList.add('active');
+  document.getElementById('reset-step2').classList.remove('active');
+  document.getElementById('reset-modal').classList.remove('hidden');
+}
+function resetStep1(){
+  const username=document.getElementById('reset-username').value.trim();
+  const code=document.getElementById('reset-code').value.trim().toUpperCase();
+  if(!username||!code) return showMsg('reset-msg','Please fill in all fields.');
+  // Check user exists
+  const user=DB.users.find(x=>x.username.toLowerCase()===username.toLowerCase());
+  if(!user) return showMsg('reset-msg','No account found with that username.');
+  // Check code is valid & unused
+  const codeEntry=DB.accessCodes.find(x=>x.code===code&&!x.used);
+  if(!codeEntry) return showMsg('reset-msg','Invalid or already used access code.');
+  // Consume the code
+  codeEntry.used=true; codeEntry.usedBy=username+' (reset)';
+  saveDB();
+  resetVerifiedUser=user;
+  clearMsg('reset-msg');
+  document.getElementById('reset-verified-user').textContent=user.username;
+  document.getElementById('reset-step1').classList.remove('active');
+  document.getElementById('reset-step2').classList.add('active');
+}
+function resetStep2(){
+  const np=document.getElementById('reset-new-pass').value;
+  const np2=document.getElementById('reset-confirm-pass').value;
+  if(!np||!np2) return showMsg('reset-msg','Please fill in both fields.');
+  if(np!==np2) return showMsg('reset-msg','Passwords do not match.');
+  if(np.length<6) return showMsg('reset-msg','Password must be at least 6 characters.');
+  resetVerifiedUser.password=np;
+  saveDB();
+  closeModal('reset-modal');
+  showMsg('auth-msg','Password reset! You can now sign in.','ok');
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function navTo(page,btn){
+  document.querySelectorAll('#app-sidebar .nav-item').forEach(n=>n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  // Sync bottom nav
+  const basePages=['home','artists','albums','songs'];
+  document.querySelectorAll('.bottom-nav-item').forEach(b=>{
+    b.classList.toggle('active', b.dataset.page===page);
+  });
+  const c=document.getElementById('main-content');
+  if(page==='home') renderHome(c);
+  else if(page==='artists') renderArtistsPage(c);
+  else if(page==='albums') renderAlbumsPage(c);
+  else if(page==='songs') renderAllSongs(c);
+  else if(page==='recent') renderRecent(c);
+  else if(page.startsWith('playlist:')) renderPlaylistPage(c,page.split(':')[1]);
+}
+
+// ============================================================
+// MOBILE NAV — syncs bottom nav + sidebar nav
+// ============================================================
+function mobileNav(page, btn){
+  // Update bottom nav active state
+  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  // Sync sidebar
+  document.querySelectorAll('#app-sidebar .nav-item').forEach(n => n.classList.remove('active'));
+  const sideBtn = document.querySelector(`#app-sidebar [data-page="${page}"]`);
+  if(sideBtn) sideBtn.classList.add('active');
+  const c = document.getElementById('main-content');
+  if(page === 'library') renderLibraryPage(c);
+  else navTo(page, null);
+}
+
+function renderLibraryPage(c){
+  const pls = getUserPlaylists();
+  const recent = DB.recentlyPlayed.map(id=>getSong(id)).filter(Boolean).slice(0,5);
+  c.innerHTML = `
+    <div class="section-header"><h1 class="section-title">Library</h1></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+      <h2 style="font-size:1rem">Your Playlists</h2>
+      <button class="btn btn-secondary btn-xs" onclick="showCreatePlaylist()">+ New</button>
+    </div>
+    ${pls.length===0 ? `<div style="color:var(--text3);font-size:.85rem;margin-bottom:1.5rem;padding:.75rem 0">No playlists yet.</div>` :
+      `<div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.5rem">
+        ${pls.map(p=>`
+          <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .5rem;border-radius:var(--radius-sm);cursor:pointer;background:var(--bg2);border:1px solid var(--border)" onclick="navTo('playlist:${p.id}',null)">
+            <div style="width:46px;height:46px;border-radius:8px;background:var(--bg3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.3rem">
+              ${p.artUrl?`<img src="${p.artUrl}" style="width:100%;height:100%;object-fit:cover">`:'📋'}
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:.88rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+              <div style="font-size:.72rem;color:var(--text3)">${p.songs.length} songs</div>
+            </div>
+            <button class="btn-ghost btn-xs" onclick="event.stopPropagation();deletePlaylist('${p.id}')" style="color:var(--text3);font-size:.8rem;padding:.3rem .5rem">✕</button>
+          </div>`).join('')}
+      </div>`}
+    ${recent.length>0 ? `
+      <div class="section-header"><h2 style="font-size:1rem">Recently Played</h2></div>
+      <div>${recent.map((s,i)=>songRowHtml(s,i,recent.map(x=>x.id))).join('')}</div>` : ''}
+  `;
+}
+
+// ============================================================
+// LIVE REFRESH (called by Firestore listener)
+// ============================================================
+function refreshCurrentView(){
+  // Only refresh if we're on the app screen
+  if(!document.getElementById('screen-app').classList.contains('active')) return;
+  const active=document.querySelector('#app-sidebar .nav-item.active');
+  const page=active?active.dataset.page:'home';
+  const c=document.getElementById('main-content');
+  if(page==='home') renderHome(c);
+  else if(page==='artists') renderArtistsPage(c);
+  else if(page==='albums') renderAlbumsPage(c);
+  else if(page==='songs') renderAllSongs(c);
+  else if(page==='recent') renderRecent(c);
+  renderPlaylistNav();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getArtist(id){return DB.artists.find(x=>x.id===id);}
+function getAlbum(id){return DB.albums.find(x=>x.id===id);}
+function getSong(id){return DB.songs.find(x=>x.id===id);}
+function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+function timeOfDay(){const h=new Date().getHours();return h<12?'morning':h<18?'afternoon':'evening';}
+function fileToDataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});}
+
+// Return display string for all artists on a song
+function songArtistNames(song){
+  const ids=song.artistIds||[song.artistId];
+  return ids.map(id=>{const a=getArtist(id);return a?a.name:'Unknown';}).join(', ');
+}
+
+function songRowHtml(song,idx,queueList){
+  const al=getAlbum(song.albumId);
+  const playing=currentSongId===song.id&&isPlaying;
+  const thumb=song.artUrl||(al?al.artUrl:null);
+  const qStr=JSON.stringify(queueList).replace(/"/g,'&quot;');
+  return `<div class="song-row ${playing?'playing':''}" onclick="playFromQueue('${qStr}',${idx})">
+    <div class="song-num">${playing?'<span class="playing-dot"></span>':(idx+1)}</div>
+    <div class="song-thumb">${thumb?`<img src="${thumb}">`:'🎵'}</div>
+    <div class="song-info"><div class="song-title">${song.title}</div><div class="song-artist">${songArtistNames(song)}</div></div>
+    <div class="song-actions"><button class="btn btn-secondary btn-xs" onclick="event.stopPropagation();quickAddToPlaylist('${song.id}')">+ Playlist</button></div>
+    <div class="song-dur">${song.duration||'—'}</div>
+  </div>`;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderHome(c){
+  c.innerHTML=`
+    <div style="margin-bottom:1.5rem">
+      <h1 style="font-size:1.8rem;margin-bottom:.2rem">Good ${timeOfDay()}, ${currentUser}</h1>
+      <p style="color:var(--text3);font-size:.85rem">What are you listening to today?</p>
+    </div>
+    ${DB.artists.length===0&&DB.songs.length===0?`<div class="empty-state"><div class="empty-icon">🎵</div><div>No music yet — an admin needs to add some!</div></div>`:''}
+    ${DB.artists.length>0?`
+      <div class="section-header"><h2 style="font-size:1.1rem">Artists</h2><button class="btn-ghost btn-sm" onclick="navTo('artists',null)">See all →</button></div>
+      <div class="grid-cards" style="margin-bottom:1.5rem">${DB.artists.slice(0,6).map(a=>`
+        <div class="card" onclick="openArtist('${a.id}')">
+          <div class="card-art" style="border-radius:50%">${a.artUrl?`<img src="${a.artUrl}" style="border-radius:50%">`:'🎤'}<div class="play-overlay" style="border-radius:50%">▶</div></div>
+          <div class="card-name" style="text-align:center">${a.name}</div><div class="card-meta" style="text-align:center">${a.genre||''}</div>
+        </div>`).join('')}</div>`:''}
+    ${DB.albums.length>0?`
+      <div class="section-header"><h2 style="font-size:1.1rem">Albums</h2><button class="btn-ghost btn-sm" onclick="navTo('albums',null)">See all →</button></div>
+      <div class="grid-cards" style="margin-bottom:1.5rem">${DB.albums.slice(0,6).map(al=>{const art=getArtist(al.artistId);return`
+        <div class="card" onclick="openAlbum('${al.id}')">
+          <div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}<div class="play-overlay">▶</div></div>
+          <div class="card-name">${al.title}</div><div class="card-meta">${art?art.name:''} · ${al.year||''}</div>
+        </div>`;}).join('')}</div>`:''}
+    ${DB.songs.length>0?`
+      <div class="section-header"><h2 style="font-size:1.1rem">Songs</h2></div>
+      <div>${DB.songs.slice(0,10).map((s,i)=>songRowHtml(s,i,DB.songs.map(x=>x.id))).join('')}</div>`:''}`;
+}
+
+function renderArtistsPage(c){
+  if(!DB.artists.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Artists</h1></div><div class="empty-state"><div class="empty-icon">🎤</div><div>No artists yet.</div></div>`;return;}
+  c.innerHTML=`<div class="section-header"><h1 class="section-title">Artists</h1></div>
+    <div class="grid-cards">${DB.artists.map(a=>`
+      <div class="card" onclick="openArtist('${a.id}')">
+        <div class="card-art" style="border-radius:50%">${a.artUrl?`<img src="${a.artUrl}" style="border-radius:50%">`:'🎤'}<div class="play-overlay" style="border-radius:50%">▶</div></div>
+        <div class="card-name" style="text-align:center">${a.name}</div><div class="card-meta" style="text-align:center">${a.genre||''}</div>
+      </div>`).join('')}</div>`;
+}
+
+function renderAlbumsPage(c){
+  if(!DB.albums.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Albums</h1></div><div class="empty-state"><div class="empty-icon">💿</div><div>No albums yet.</div></div>`;return;}
+  c.innerHTML=`<div class="section-header"><h1 class="section-title">Albums</h1></div>
+    <div class="grid-cards">${DB.albums.map(al=>{const art=getArtist(al.artistId);return`
+      <div class="card" onclick="openAlbum('${al.id}')">
+        <div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}<div class="play-overlay">▶</div></div>
+        <div class="card-name">${al.title}</div><div class="card-meta">${art?art.name:''} · ${al.year||''}</div>
+      </div>`;}).join('')}</div>`;
+}
+
+function renderAllSongs(c){
+  if(!DB.songs.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Songs</h1></div><div class="empty-state"><div class="empty-icon">🎵</div><div>No songs yet.</div></div>`;return;}
+  const ids=DB.songs.map(s=>s.id);
+  c.innerHTML=`<div class="section-header"><h1 class="section-title">All Songs</h1>
+    <button class="btn btn-secondary btn-sm" onclick="playFromQueue('${JSON.stringify(ids).replace(/"/g,'&quot;')}',0)">▶ Play All</button></div>
+    <div>${DB.songs.map((s,i)=>songRowHtml(s,i,ids)).join('')}</div>`;
+}
+
+function renderRecent(c){
+  const songs=DB.recentlyPlayed.map(id=>getSong(id)).filter(Boolean);
+  if(!songs.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Recently Played</h1></div><div class="empty-state"><div class="empty-icon">🕐</div><div>Nothing played yet.</div></div>`;return;}
+  const ids=songs.map(s=>s.id);
+  c.innerHTML=`<div class="section-header"><h1 class="section-title">Recently Played</h1></div>
+    <div>${songs.map((s,i)=>songRowHtml(s,i,ids)).join('')}</div>`;
+}
+
+function openArtist(id){
+  const art=getArtist(id); if(!art) return;
+  // Songs where this artist is the PRIMARY (first) artist
+  const mainSongs=DB.songs.filter(s=>{const ids=s.artistIds||[s.artistId];return ids[0]===id;});
+  // Albums where this artist is the main album artist
+  const mainAlbums=DB.albums.filter(x=>x.artistId===id);
+
+  // "Appears on": songs/albums where this artist is a FEATURED artist (not primary)
+  const featSongs=DB.songs.filter(s=>{
+    const ids=s.artistIds||[s.artistId];
+    return ids.includes(id)&&ids[0]!==id;
+  });
+  // Deduplicate by album (or single if no album)
+  const appearsOnItems=[];
+  const seenAlbums=new Set();
+  featSongs.forEach(s=>{
+    if(s.albumId){
+      if(!seenAlbums.has(s.albumId)){
+        seenAlbums.add(s.albumId);
+        const al=getAlbum(s.albumId);
+        if(al) appearsOnItems.push({type:'album',item:al});
+      }
+    } else {
+      // treat as a single
+      appearsOnItems.push({type:'single',item:s});
+    }
+  });
+
+  const mainIds=mainSongs.map(s=>s.id);
+  const c=document.getElementById('main-content');
+  c.innerHTML=`
+    <button class="back-btn" onclick="navTo('artists',null)">← Back to Artists</button>
+    <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:1.75rem">
+      <div style="width:110px;height:110px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:3rem;overflow:hidden;flex-shrink:0">
+        ${art.artUrl?`<img src="${art.artUrl}" style="width:100%;height:100%;object-fit:cover">`:art.emoji||'🎤'}
+      </div>
+      <div>
+        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.2rem">Artist</div>
+        <h1 style="font-size:2rem;font-weight:800">${art.name}</h1>
+        <div style="color:var(--text3);font-size:.82rem;margin-top:.3rem">${art.genre||''} · ${mainSongs.length} songs</div>
+        ${art.bio?`<div style="font-size:.82rem;color:var(--text2);margin-top:.4rem;max-width:380px">${art.bio}</div>`:''}
+        ${mainSongs.length>0?`<button class="btn btn-primary btn-sm" style="margin-top:.65rem" onclick="playFromQueue('${JSON.stringify(mainIds).replace(/"/g,'&quot;')}',0)">▶ Play All</button>`:''}
+      </div>
+    </div>
+    ${mainAlbums.length>0?`
+      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Albums</h2></div>
+      <div class="grid-cards" style="margin-bottom:1.5rem">${mainAlbums.map(al=>`
+        <div class="card" onclick="openAlbum('${al.id}')">
+          <div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}<div class="play-overlay">▶</div></div>
+          <div class="card-name">${al.title}</div><div class="card-meta">${al.year||''}</div>
+        </div>`).join('')}
+      </div>`:''}
+    ${mainSongs.length>0?`
+      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Songs</h2></div>
+      <div style="margin-bottom:1.75rem">${mainSongs.map((s,i)=>songRowHtml(s,i,mainIds)).join('')}</div>`:''}
+    ${appearsOnItems.length>0?`
+      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Appears On</h2></div>
+      <div class="grid-cards">${appearsOnItems.map(({type,item})=>{
+        if(type==='album'){
+          const mainArt=getArtist(item.artistId);
+          return`<div class="card" onclick="openAlbum('${item.id}')">
+            <div class="card-art">${item.artUrl?`<img src="${item.artUrl}">`:'💿'}<div class="play-overlay">▶</div></div>
+            <div class="card-name">${item.title}</div>
+            <div class="card-meta">${mainArt?mainArt.name:''} · ${item.year||''}</div>
+          </div>`;
+        } else {
+          // single song
+          const al=getAlbum(item.albumId);
+          const thumb=item.artUrl||(al?al.artUrl:null);
+          const qStr=JSON.stringify([item.id]).replace(/"/g,'&quot;');
+          return`<div class="card" onclick="playFromQueue('${qStr}',0)">
+            <div class="card-art">${thumb?`<img src="${thumb}">`:'🎵'}<div class="play-overlay">▶</div></div>
+            <div class="card-name">${item.title}</div>
+            <div class="card-meta">${songArtistNames(item)}</div>
+          </div>`;
+        }
+      }).join('')}</div>`:''}`;
+}
+
+function openAlbum(id){
+  const al=getAlbum(id); if(!al) return;
+  const art=getArtist(al.artistId);
+  const songs=DB.songs.filter(x=>x.albumId===id);
+  const ids=songs.map(s=>s.id);
+  const c=document.getElementById('main-content');
+  c.innerHTML=`
+    <button class="back-btn" onclick="navTo('albums',null)">← Back to Albums</button>
+    <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:1.75rem">
+      <div style="width:110px;height:110px;border-radius:var(--radius);background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:3rem;overflow:hidden;flex-shrink:0">
+        ${al.artUrl?`<img src="${al.artUrl}" style="width:100%;height:100%;object-fit:cover">`:al.emoji||'💿'}
+      </div>
+      <div>
+        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.2rem">Album</div>
+        <h1 style="font-size:2rem;font-weight:800">${al.title}</h1>
+        <div style="color:var(--text3);font-size:.82rem;margin-top:.3rem">
+          ${art?`<span class="artist-chip" onclick="openArtist('${art.id}')" style="font-size:.82rem;padding:.1rem 0;background:none;border:none;color:var(--text2)">${art.name}</span>`:''}
+          ${al.year?`· ${al.year}`:''}  · ${songs.length} songs
+        </div>
+        ${songs.length>0?`<button class="btn btn-primary btn-sm" style="margin-top:.65rem" onclick="playFromQueue('${JSON.stringify(ids).replace(/"/g,'&quot;')}',0)">▶ Play All</button>`:''}
+      </div>
+    </div>
+    ${songs.length>0?`<div>${songs.map((s,i)=>songRowHtml(s,i,ids)).join('')}</div>`:`<div class="empty-state"><div>No songs in this album yet.</div></div>`}`;
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+function doSearch(q){
+  if(!q.trim()){navTo('home',document.querySelector('[data-page="home"]'));return;}
+  const ql=q.toLowerCase();
+  const songs=DB.songs.filter(s=>s.title.toLowerCase().includes(ql)||songArtistNames(s).toLowerCase().includes(ql));
+  const artists=DB.artists.filter(a=>a.name.toLowerCase().includes(ql));
+  const albums=DB.albums.filter(al=>al.title.toLowerCase().includes(ql));
+  document.querySelectorAll('#app-sidebar .nav-item').forEach(n=>n.classList.remove('active'));
+  const c=document.getElementById('main-content');
+  c.innerHTML=`
+    <h1 style="margin-bottom:1.25rem;font-size:1.3rem">Results for "${q}"</h1>
+    ${artists.length?`<div class="section-header"><h2 style="font-size:.95rem">Artists</h2></div><div class="grid-cards" style="margin-bottom:1.25rem">${artists.map(a=>`<div class="card" onclick="openArtist('${a.id}')"><div class="card-art">${a.artUrl?`<img src="${a.artUrl}">`:'🎤'}</div><div class="card-name">${a.name}</div></div>`).join('')}</div>`:''}
+    ${albums.length?`<div class="section-header"><h2 style="font-size:.95rem">Albums</h2></div><div class="grid-cards" style="margin-bottom:1.25rem">${albums.map(al=>`<div class="card" onclick="openAlbum('${al.id}')"><div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}</div><div class="card-name">${al.title}</div></div>`).join('')}</div>`:''}
+    ${songs.length?`<div class="section-header"><h2 style="font-size:.95rem">Songs</h2></div><div>${songs.map((s,i)=>songRowHtml(s,i,songs.map(x=>x.id))).join('')}</div>`:''}
+    ${!songs.length&&!artists.length&&!albums.length?`<div class="empty-state"><div class="empty-icon">🔍</div><div>No results found.</div></div>`:''}`;
+}
+
+// ============================================================
+// PLAYLISTS
+// ============================================================
+function getUserPlaylists(){return DB.playlists.filter(p=>p.userId===currentUserId);}
+function renderPlaylistNav(){
+  const el=document.getElementById('playlist-nav'); if(!el) return;
+  el.innerHTML=getUserPlaylists().map(p=>`
+    <button class="nav-item" data-page="playlist:${p.id}" onclick="navTo('playlist:${p.id}',this)">
+      <span class="nav-icon">📋</span>
+      <div class="pl-nav-row">
+        <span class="pl-nav-label">${p.name}</span>
+        <button class="pl-del-btn" onclick="event.stopPropagation();deletePlaylist('${p.id}')">✕</button>
+      </div>
+    </button>`).join('');
+}
+function previewPlArt(input){
+  if(!input.files[0]) return;
+  fileToDataUrl(input.files[0]).then(url=>{
+    plArtDataUrl=url;
+    document.getElementById('pl-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`;
+  });
+}
+function showCreatePlaylist(){
+  document.getElementById('pl-name').value='';
+  document.getElementById('pl-desc').value='';
+  document.getElementById('pl-art-preview').innerHTML='';
+  plArtDataUrl=null;
+  clearMsg('create-playlist-msg');
+  document.getElementById('modal-create-playlist').classList.remove('hidden');
+}
+function createPlaylist(){
+  const name=document.getElementById('pl-name').value.trim();
+  if(!name) return showMsg('create-playlist-msg','Please enter a name.');
+  DB.playlists.push({id:'pl'+Date.now(),name,desc:document.getElementById('pl-desc').value.trim(),artUrl:plArtDataUrl,userId:currentUserId,songs:[]});
+  plArtDataUrl=null;
+  saveDB();
+  closeModal('modal-create-playlist');
+  renderPlaylistNav();
+}
+function deletePlaylist(id){
+  DB.playlists=DB.playlists.filter(x=>x.id!==id);
+  saveDB();
+  renderPlaylistNav();
+  navTo('home',document.querySelector('[data-page="home"]'));
+}
+function renderPlaylistPage(c,id){
+  const pl=DB.playlists.find(x=>x.id===id);
+  if(!pl){c.innerHTML='<div class="empty-state">Playlist not found.</div>';return;}
+  const songs=pl.songs.map(sid=>getSong(sid)).filter(Boolean);
+  const ids=songs.map(s=>s.id);
+  const qStr=JSON.stringify(ids).replace(/"/g,'&quot;');
+  c.innerHTML=`
+    <div class="pl-header">
+      <div class="pl-cover">${pl.artUrl?`<img src="${pl.artUrl}">`:' 📋'}</div>
+      <div>
+        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.2rem">Playlist</div>
+        <h1 style="font-size:1.9rem;font-weight:800">${pl.name}</h1>
+        ${pl.desc?`<div style="color:var(--text3);margin-top:.25rem;font-size:.82rem">${pl.desc}</div>`:''}
+        <div style="color:var(--text3);font-size:.78rem;margin-top:.25rem">${songs.length} songs</div>
+        ${songs.length>0?`<div style="display:flex;gap:.5rem;margin-top:.65rem">
+          <button class="btn btn-primary btn-sm" onclick="playFromQueue('${qStr}',0)">▶ Play All</button>
+          <button class="btn btn-secondary btn-sm" onclick="shuffleAndPlay('${qStr}')">⇄ Shuffle</button>
+        </div>`:''}
+      </div>
+    </div>
+    ${songs.length>0?`<div>${songs.map((s,i)=>{
+      const al=getAlbum(s.albumId);
+      const thumb=s.artUrl||(al?al.artUrl:null);
+      const playing=currentSongId===s.id&&isPlaying;
+      return`<div class="song-row ${playing?'playing':''}" onclick="playFromQueue('${qStr}',${i})">
+        <div class="song-num">${playing?'<span class="playing-dot"></span>':(i+1)}</div>
+        <div class="song-thumb">${thumb?`<img src="${thumb}">`:'🎵'}</div>
+        <div class="song-info"><div class="song-title">${s.title}</div><div class="song-artist">${songArtistNames(s)}</div></div>
+        <div class="song-actions"><button class="btn btn-danger btn-xs" onclick="event.stopPropagation();removeFromPlaylist('${pl.id}','${s.id}')">Remove</button></div>
+        <div class="song-dur">${s.duration||'—'}</div>
+      </div>`;}).join('')}</div>`
+    :`<div class="empty-state"><div class="empty-icon">🎵</div><div>No songs yet. Add some using the "+ Playlist" button on any song.</div></div>`}`;
+}
+function showAddToPlaylist(){
+  if(!currentSongId) return;
+  populateAddToPlaylist(currentSongId);
+  document.getElementById('modal-add-to-playlist').classList.remove('hidden');
+}
+function quickAddToPlaylist(songId){
+  populateAddToPlaylist(songId);
+  document.getElementById('modal-add-to-playlist').classList.remove('hidden');
+}
+function populateAddToPlaylist(songId){
+  const pls=getUserPlaylists();
+  const el=document.getElementById('add-playlist-list');
+  if(!pls.length){
+    el.innerHTML=`<div style="color:var(--text3);font-size:.85rem;text-align:center;padding:.5rem">No playlists yet. Create one first!</div>`;
+  } else {
+    el.innerHTML=pls.map(p=>`
+      <button class="btn btn-secondary btn-full" onclick="addSongToPlaylist('${p.id}','${songId}')">
+        ${p.artUrl?`<img src="${p.artUrl}" style="width:28px;height:28px;border-radius:5px;object-fit:cover">`:' 📋'}
+        <span style="flex:1;text-align:left">${p.name}</span>
+        <span style="color:var(--text3);font-size:.72rem">${p.songs.length} songs</span>
+      </button>`).join('');
+  }
+}
+function addSongToPlaylist(plId,songId){
+  const pl=DB.playlists.find(x=>x.id===plId); if(!pl) return;
+  if(!pl.songs.includes(songId)) pl.songs.push(songId);
+  saveDB();
+  closeModal('modal-add-to-playlist');
+  renderPlaylistNav();
+}
+function removeFromPlaylist(plId,songId){
+  const pl=DB.playlists.find(x=>x.id===plId); if(!pl) return;
+  pl.songs=pl.songs.filter(x=>x!==songId);
+  saveDB();
+  renderPlaylistPage(document.getElementById('main-content'),plId);
+}
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
+
+// ============================================================
+// PLAYER
+// ============================================================
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function playFromQueue(queueIds,idx){
+  if(typeof queueIds==='string') queueIds=JSON.parse(queueIds);
+  originalQueue=[...queueIds];
+  if(isShuffle){
+    currentQueue=shuffleArray(queueIds);
+    const songId=queueIds[idx];
+    const si=currentQueue.indexOf(songId);
+    if(si>0){[currentQueue[0],currentQueue[si]]=[currentQueue[si],currentQueue[0]];}
+    currentQueueIdx=0;
+  } else {
+    currentQueue=[...queueIds];
+    currentQueueIdx=idx;
+  }
+  loadSong(currentQueue[currentQueueIdx]);
+}
+function shuffleAndPlay(queueIds){
+  if(typeof queueIds==='string') queueIds=JSON.parse(queueIds);
+  isShuffle=true; updateShuffleBtn();
+  playFromQueue(queueIds,0);
+}
+function loadSong(id){
+  const s=getSong(id); if(!s) return;
+  currentSongId=id;
+  if(!DB.recentlyPlayed.includes(id)) DB.recentlyPlayed.unshift(id);
+  if(DB.recentlyPlayed.length>50) DB.recentlyPlayed.pop();
+  saveDB();
+  if(s.audioUrl){
+    audio.src=s.audioUrl;
+    audio.play().then(()=>{isPlaying=true;updatePlayBtn();}).catch(()=>{isPlaying=false;updatePlayBtn();});
+  } else {
+    audio.src=''; isPlaying=false; updatePlayBtn();
+  }
+  const al=getAlbum(s.albumId);
+  document.getElementById('player-title').textContent=s.title;
+  document.getElementById('player-artist').textContent=songArtistNames(s);
+  const artImg=s.artUrl||(al?al.artUrl:null);
+  document.getElementById('player-cover').innerHTML=artImg?`<img src="${artImg}">`:s.emoji||'♪';
+}
+function togglePlay(){
+  if(!currentSongId){if(DB.songs.length) playFromQueue(DB.songs.map(s=>s.id),0); return;}
+  if(isPlaying){audio.pause();}else{audio.play().catch(()=>{});}
+}
+function prevSong(){if(currentQueueIdx>0){currentQueueIdx--;loadSong(currentQueue[currentQueueIdx]);}}
+function nextSong(){
+  if(currentQueueIdx<currentQueue.length-1){currentQueueIdx++;loadSong(currentQueue[currentQueueIdx]);}
+  else if(isRepeat){currentQueueIdx=0;loadSong(currentQueue[0]);}
+  else{isPlaying=false;updatePlayBtn();}
+}
+function toggleShuffle(){
+  isShuffle=!isShuffle;
+  if(isShuffle&&currentQueue.length>0){
+    const curId=currentQueue[currentQueueIdx];
+    currentQueue=shuffleArray(originalQueue);
+    const si=currentQueue.indexOf(curId);
+    if(si>0){[currentQueue[0],currentQueue[si]]=[currentQueue[si],currentQueue[0]];}
+    currentQueueIdx=0;
+  } else if(!isShuffle&&originalQueue.length>0){
+    const curId=currentSongId;
+    currentQueue=[...originalQueue];
+    currentQueueIdx=currentQueue.indexOf(curId);
+  }
+  updateShuffleBtn();
+}
+function toggleRepeat(){isRepeat=!isRepeat;updateRepeatBtn();}
+function updatePlayBtn(){document.getElementById('play-btn').textContent=isPlaying?'⏸':'▶';}
+function updateShuffleBtn(){document.getElementById('shuffle-btn').classList.toggle('active-ctrl',isShuffle);}
+function updateRepeatBtn(){document.getElementById('repeat-btn').classList.toggle('active-ctrl',isRepeat);}
+function seekTrack(e){if(!audio.duration)return;audio.currentTime=(e.offsetX/document.getElementById('progress-bar').offsetWidth)*audio.duration;}
+audio.addEventListener('timeupdate',()=>{
+  if(!audio.duration)return;
+  document.getElementById('progress-fill').style.width=((audio.currentTime/audio.duration)*100)+'%';
+  document.getElementById('time-cur').textContent=fmtTime(audio.currentTime);
+  document.getElementById('time-dur').textContent=fmtTime(audio.duration);
+});
+audio.addEventListener('ended',()=>nextSong());
+audio.addEventListener('play',()=>{isPlaying=true;updatePlayBtn();});
+audio.addEventListener('pause',()=>{isPlaying=false;updatePlayBtn();});
+
+// ============================================================
+// ADMIN
+// ============================================================
+function adminNav(panel,btn){
+  document.querySelectorAll('#screen-admin .nav-item').forEach(n=>n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('admin-panel-'+panel).classList.add('active');
+  ({dashboard:renderAdminDashboard,songs:renderAdminSongs,albums:renderAdminAlbums,artists:renderAdminArtists,codes:renderAdminCodes,users:renderAdminUsers,settings:renderAdminSettings})[panel]();
+}
+
+function renderAdminDashboard(){
+  document.getElementById('admin-panel-dashboard').innerHTML=`
+    <h2 style="margin-bottom:1.25rem">Dashboard</h2>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-val">${DB.songs.length}</div><div class="stat-label">Songs</div></div>
+      <div class="stat-card"><div class="stat-val">${DB.albums.length}</div><div class="stat-label">Albums</div></div>
+      <div class="stat-card"><div class="stat-val">${DB.artists.length}</div><div class="stat-label">Artists</div></div>
+      <div class="stat-card"><div class="stat-val">${DB.users.length}</div><div class="stat-label">Users</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-val">${DB.accessCodes.filter(x=>!x.used).length}</div><div class="stat-label">Unused Codes</div></div>
+      <div class="stat-card"><div class="stat-val">${DB.accessCodes.filter(x=>x.used).length}</div><div class="stat-label">Used Codes</div></div>
+      <div class="stat-card"><div class="stat-val">${DB.playlists.length}</div><div class="stat-label">Playlists</div></div>
+      <div class="stat-card"><div class="stat-val">${DB.recentlyPlayed.length}</div><div class="stat-label">Streams</div></div>
+    </div>`;
+}
+
+// ---- MULTI-ARTIST PICKER ----
+let pickerSelectedIds=[];
+function buildArtistPicker(containerId,selectedIds){
+  pickerSelectedIds=[...selectedIds];
+  const el=document.getElementById(containerId);
+  el.innerHTML=`
+    <div class="artist-picker" id="picker-list-${containerId}">
+      ${DB.artists.length===0?`<div style="color:var(--text3);font-size:.8rem;padding:.3rem">No artists added yet.</div>`:''}
+      ${DB.artists.map(a=>`
+        <label class="artist-picker-item ${pickerSelectedIds.includes(a.id)?'selected':''}" id="pitem-${containerId}-${a.id}">
+          <input type="checkbox" value="${a.id}" ${pickerSelectedIds.includes(a.id)?'checked':''} onchange="pickerToggle('${containerId}','${a.id}',this.checked)">
+          ${a.artUrl?`<img src="${a.artUrl}" style="width:22px;height:22px;border-radius:50%;object-fit:cover">`:'🎤'}
+          <span>${a.name}</span>
+        </label>`).join('')}
+    </div>
+    <div class="selected-artists-preview" id="picker-preview-${containerId}"></div>`;
+  updatePickerPreview(containerId);
+}
+function pickerToggle(containerId,artistId,checked){
+  if(checked){
+    if(!pickerSelectedIds.includes(artistId)) pickerSelectedIds.push(artistId);
+  } else {
+    pickerSelectedIds=pickerSelectedIds.filter(x=>x!==artistId);
+  }
+  // update selected style
+  const item=document.getElementById(`pitem-${containerId}-${artistId}`);
+  if(item) item.classList.toggle('selected',checked);
+  updatePickerPreview(containerId);
+}
+function updatePickerPreview(containerId){
+  const el=document.getElementById(`picker-preview-${containerId}`);
+  if(!el) return;
+  el.innerHTML=pickerSelectedIds.map(id=>{
+    const a=getArtist(id); if(!a) return '';
+    return`<span class="sel-chip">${a.name}<span class="sel-chip-x" onclick="pickerRemove('${containerId}','${id}')">✕</span></span>`;
+  }).join('');
+}
+function pickerRemove(containerId,artistId){
+  pickerSelectedIds=pickerSelectedIds.filter(x=>x!==artistId);
+  const cb=document.querySelector(`#picker-list-${containerId} input[value="${artistId}"]`);
+  if(cb){cb.checked=false;cb.closest('.artist-picker-item').classList.remove('selected');}
+  updatePickerPreview(containerId);
+}
+
+// ---- ARTISTS ----
+let artistArtDataUrl=null;
+function renderAdminArtists(){
+  const el=document.getElementById('admin-panel-artists');
+  el.innerHTML=`
+    <div class="section-header"><h2>Artists</h2></div>
+    <div class="form-card">
+      <h3>Add Artist</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Name</label><input type="text" id="new-art-name" placeholder="Artist name"></div>
+        <div class="form-group"><label>Genre</label><input type="text" id="new-art-genre" placeholder="Electronic, Rock..."></div>
+        <div class="form-group full"><label>Bio</label><textarea id="new-art-bio" placeholder="Short bio..."></textarea></div>
+        <div class="form-group full">
+          <label>Artist Photo</label>
+          <div class="upload-zone"><input type="file" accept="image/*" id="art-art-file" onchange="previewArtistArt(this)">
+          <div class="upload-zone-label">📷 Click to upload photo</div>
+          <div class="upload-zone-sub">JPG, PNG, WEBP</div>
+          <div id="art-art-preview"></div></div>
+        </div>
+      </div>
+      <div id="art-form-msg" style="margin-top:.5rem"></div>
+      <button class="btn btn-primary btn-sm" style="margin-top:.85rem" onclick="addArtist()">Add Artist</button>
+    </div>
+    <table><thead><tr><th>Art</th><th>Name</th><th>Genre</th><th>Albums</th><th>Songs</th><th></th></tr></thead>
+    <tbody>${DB.artists.map(a=>`<tr>
+      <td>${a.artUrl?`<img src="${a.artUrl}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`:a.emoji||'🎤'}</td>
+      <td>${a.name}</td><td>${a.genre||'—'}</td>
+      <td>${DB.albums.filter(x=>x.artistId===a.id).length}</td>
+      <td>${DB.songs.filter(s=>(s.artistIds||[s.artistId]).includes(a.id)).length}</td>
+      <td><button class="btn btn-danger btn-xs" onclick="deleteArtist('${a.id}')">Delete</button></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+function previewArtistArt(input){if(!input.files[0])return;fileToDataUrl(input.files[0]).then(url=>{artistArtDataUrl=url;document.getElementById('art-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`});}
+function addArtist(){
+  const name=document.getElementById('new-art-name').value.trim();
+  const genre=document.getElementById('new-art-genre').value.trim();
+  const bio=document.getElementById('new-art-bio').value.trim();
+  if(!name) return showMsg('art-form-msg','Name is required.');
+  DB.artists.push({id:'a'+Date.now(),name,genre,bio,artUrl:artistArtDataUrl,emoji:'🎤'});
+  artistArtDataUrl=null;
+  saveDB();
+  showMsg('art-form-msg','Artist added!','ok');
+  setTimeout(()=>renderAdminArtists(),700);
+}
+function deleteArtist(id){DB.artists=DB.artists.filter(x=>x.id!==id);saveDB();renderAdminArtists();}
+
+// ---- ALBUMS (one artist per album) ----
+let albumArtDataUrl=null;
+function renderAdminAlbums(){
+  const el=document.getElementById('admin-panel-albums');
+  el.innerHTML=`
+    <div class="section-header"><h2>Albums</h2></div>
+    <div class="form-card">
+      <h3>Add Album</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Title</label><input type="text" id="new-alb-title" placeholder="Album title"></div>
+        <div class="form-group"><label>Year</label><input type="text" id="new-alb-year" placeholder="2025"></div>
+        <div class="form-group full"><label>Artist (one per album)</label><select id="new-alb-artist"><option value="">Select artist...</option>${DB.artists.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}</select></div>
+        <div class="form-group full"><label>Album Art</label>
+          <div class="upload-zone"><input type="file" accept="image/*" id="alb-art-file" onchange="previewAlbumArt(this)">
+          <div class="upload-zone-label">🖼 Click to upload album art</div>
+          <div class="upload-zone-sub">JPG, PNG, WEBP</div>
+          <div id="alb-art-preview"></div></div>
+        </div>
+      </div>
+      <div id="alb-form-msg" style="margin-top:.5rem"></div>
+      <button class="btn btn-primary btn-sm" style="margin-top:.85rem" onclick="addAlbum()">Add Album</button>
+    </div>
+    <table><thead><tr><th>Art</th><th>Title</th><th>Artist</th><th>Year</th><th>Songs</th><th></th></tr></thead>
+    <tbody>${DB.albums.map(al=>{const art=getArtist(al.artistId);return`<tr>
+      <td>${al.artUrl?`<img src="${al.artUrl}" style="width:32px;height:32px;border-radius:5px;object-fit:cover">`:al.emoji||'💿'}</td>
+      <td>${al.title}</td><td>${art?art.name:'—'}</td><td>${al.year||'—'}</td>
+      <td>${DB.songs.filter(x=>x.albumId===al.id).length}</td>
+      <td><button class="btn btn-danger btn-xs" onclick="deleteAlbum('${al.id}')">Delete</button></td>
+    </tr>`;}).join('')}</tbody></table>`;
+}
+function previewAlbumArt(input){if(!input.files[0])return;fileToDataUrl(input.files[0]).then(url=>{albumArtDataUrl=url;document.getElementById('alb-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`});}
+function addAlbum(){
+  const title=document.getElementById('new-alb-title').value.trim();
+  const year=document.getElementById('new-alb-year').value.trim();
+  const artistId=document.getElementById('new-alb-artist').value;
+  if(!title) return showMsg('alb-form-msg','Title is required.');
+  DB.albums.push({id:'al'+Date.now(),title,artistId,year,artUrl:albumArtDataUrl,emoji:'💿'});
+  albumArtDataUrl=null;
+  saveDB();
+  showMsg('alb-form-msg','Album added!','ok');
+  setTimeout(()=>renderAdminAlbums(),700);
+}
+function deleteAlbum(id){DB.albums=DB.albums.filter(x=>x.id!==id);saveDB();renderAdminAlbums();}
+
+// ---- SONGS (multi-artist) ----
+let songAudioDataUrl=null,songAudioFileName=null,songArtDataUrl2=null,songDuration=null;
+function renderAdminSongs(){
+  const el=document.getElementById('admin-panel-songs');
+  el.innerHTML=`
+    <div class="section-header"><h2>Songs</h2></div>
+    <div class="form-card">
+      <h3>Add Song</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Title</label><input type="text" id="new-song-title" placeholder="Song title"></div>
+        <div class="form-group"><label>Album (optional)</label><select id="new-song-album"><option value="">No album / Single</option>${DB.albums.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')}</select></div>
+        <div class="form-group full">
+          <label>Artists <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">— first selected = primary artist</span></label>
+          <div id="song-artist-picker"></div>
+        </div>
+        <div class="form-group full"><label>Audio File</label>
+          <div class="upload-zone"><input type="file" accept="audio/*" id="song-audio-file" onchange="previewSongAudio(this)">
+          <div class="upload-zone-label">🎵 Click to upload audio</div>
+          <div class="upload-zone-sub">MP3, WAV, OGG, FLAC, M4A</div>
+          <div id="song-audio-preview"></div></div>
+        </div>
+        <div class="form-group full"><label>Song Art (optional)</label>
+          <div class="upload-zone"><input type="file" accept="image/*" id="song-art-file" onchange="previewSongArt(this)">
+          <div class="upload-zone-label">🖼 Click to upload art</div>
+          <div class="upload-zone-sub">JPG, PNG, WEBP — uses album art if blank</div>
+          <div id="song-art-preview"></div></div>
+        </div>
+      </div>
+      <div id="songs-form-msg" style="margin-top:.5rem"></div>
+      <button class="btn btn-primary btn-sm" style="margin-top:.85rem" onclick="addSong()">Add Song</button>
+    </div>
+    <table><thead><tr><th>Art</th><th>Title</th><th>Artists</th><th>Album</th><th>Duration</th><th>Audio</th><th></th></tr></thead>
+    <tbody>${DB.songs.map(s=>{
+      const alb=getAlbum(s.albumId);
+      const thumb=s.artUrl||(alb?alb.artUrl:null);
+      return`<tr>
+        <td>${thumb?`<img src="${thumb}" style="width:32px;height:32px;border-radius:5px;object-fit:cover">`:' 🎵'}</td>
+        <td>${s.title}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${songArtistNames(s)}</td>
+        <td>${alb?alb.title:'—'}</td><td>${s.duration||'—'}</td>
+        <td>${s.audioUrl?`<span style="color:var(--success);font-size:.72rem">✓</span>`:`<span style="color:var(--text3);font-size:.72rem">—</span>`}</td>
+        <td><button class="btn btn-danger btn-xs" onclick="deleteSong('${s.id}')">Delete</button></td>
+      </tr>`;}).join('')}</tbody></table>`;
+  // Build artist picker after DOM is ready
+  buildArtistPicker('song-artist-picker',[]);
+}
+function previewSongAudio(input){
+  if(!input.files[0])return;
+  const file=input.files[0];
+  songAudioFileName=file.name;
+  songDuration=null;
+  // Store as base64 so it persists in localStorage
+  document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">⏳ ${file.name} — loading...</div>`;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    songAudioDataUrl=e.target.result; // base64 data URL — persistable
+    // Read duration via a blob URL (lightweight, just for metadata)
+    const blobUrl=URL.createObjectURL(file);
+    const tmp=new Audio();
+    tmp.preload='metadata';
+    tmp.onloadedmetadata=()=>{
+      songDuration=fmtTime(tmp.duration);
+      document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ ${file.name} (${songDuration})</div>`;
+      URL.revokeObjectURL(blobUrl);
+    };
+    tmp.onerror=()=>{
+      document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ ${file.name}</div>`;
+      URL.revokeObjectURL(blobUrl);
+    };
+    tmp.src=blobUrl;
+  };
+  reader.onerror=()=>{ document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio" style="color:var(--danger)">✗ Failed to read file</div>`; };
+  reader.readAsDataURL(file);
+}
+function previewSongArt(input){if(!input.files[0])return;fileToDataUrl(input.files[0]).then(url=>{songArtDataUrl2=url;document.getElementById('song-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`});}
+function addSong(){
+  const title=document.getElementById('new-song-title').value.trim();
+  const albumId=document.getElementById('new-song-album').value;
+  const artistIds=[...pickerSelectedIds]; // from the picker
+  if(!title) return showMsg('songs-form-msg','Title is required.');
+  if(!songAudioDataUrl) return showMsg('songs-form-msg','Please upload an audio file.');
+  if(artistIds.length===0) return showMsg('songs-form-msg','Please select at least one artist.');
+  const alb=getAlbum(albumId);
+  DB.songs.push({
+    id:'s'+Date.now(),title,
+    artistIds, // array — first is primary
+    artistId:artistIds[0], // backwards compat
+    albumId,
+    audioUrl:songAudioDataUrl,artUrl:songArtDataUrl2,
+    albumArtUrl:alb?alb.artUrl:null,
+    duration:songDuration,emoji:'🎵'
+  });
+  songAudioDataUrl=null;songAudioFileName=null;songArtDataUrl2=null;songDuration=null;
+  saveDB();
+  showMsg('songs-form-msg','Song added!','ok');
+  setTimeout(()=>renderAdminSongs(),700);
+}
+function deleteSong(id){DB.songs=DB.songs.filter(x=>x.id!==id);saveDB();renderAdminSongs();}
+
+// ---- CODES ----
+function renderAdminCodes(){
+  const el=document.getElementById('admin-panel-codes');
+  el.innerHTML=`
+    <div class="section-header"><h2>Access Codes</h2></div>
+    <div class="form-card">
+      <h3>Generate Code</h3>
+      <div style="display:flex;gap:.65rem;align-items:flex-end">
+        <div style="flex:1"><label>Custom code (blank = auto-generate)</label><input type="text" id="new-code-input" placeholder="e.g. FRIEND2025" style="text-transform:uppercase;margin-bottom:0"></div>
+        <button class="btn btn-primary btn-sm" style="height:38px" onclick="addCode()">Generate</button>
+      </div>
+      <div id="code-form-msg" style="margin-top:.45rem"></div>
+    </div>
+    <table><thead><tr><th>Code</th><th>Status</th><th>Used By</th><th></th></tr></thead>
+    <tbody>${DB.accessCodes.map(c=>`<tr>
+      <td><span class="code-box">${c.code}</span></td>
+      <td><span class="tag ${c.used?'tag-used':'tag-active'}">${c.used?'Used':'Active'}</span></td>
+      <td style="color:var(--text3)">${c.usedBy||'—'}</td>
+      <td><button class="btn btn-danger btn-xs" onclick="deleteCode('${c.code}')">Delete</button></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+function addCode(){
+  let code=document.getElementById('new-code-input').value.trim().toUpperCase();
+  if(!code) code='CODE'+Math.random().toString(36).substring(2,7).toUpperCase();
+  if(DB.accessCodes.find(x=>x.code===code)) return showMsg('code-form-msg','Code already exists.');
+  DB.accessCodes.push({code,used:false,usedBy:null});
+  saveDB();
+  showMsg('code-form-msg','Code added: '+code,'ok');
+  setTimeout(()=>renderAdminCodes(),700);
+}
+function deleteCode(code){DB.accessCodes=DB.accessCodes.filter(x=>x.code!==code);saveDB();renderAdminCodes();}
+
+// ---- USERS ----
+function renderAdminUsers(){
+  const el=document.getElementById('admin-panel-users');
+  el.innerHTML=`
+    <div class="section-header"><h2>Users</h2></div>
+    ${!DB.users.length?`<div class="empty-state"><div class="empty-icon">👥</div><div>No registered users yet.</div></div>`:`
+    <table><thead><tr><th>Username</th><th>Code Verified</th><th>Playlists</th><th></th></tr></thead>
+    <tbody>${DB.users.map(u=>`<tr>
+      <td>${u.username}</td>
+      <td><span class="tag ${u.codeUsed?'tag-active':'tag-used'}">${u.codeUsed?'Yes':'No'}</span></td>
+      <td>${DB.playlists.filter(p=>p.userId===u.id).length}</td>
+      <td><button class="btn btn-danger btn-xs" onclick="deleteUser('${u.id}')">Delete</button></td>
+    </tr>`).join('')}</tbody></table>`}`;
+}
+function deleteUser(id){DB.users=DB.users.filter(x=>x.id!==id);saveDB();renderAdminUsers();}
+
+// ---- SETTINGS ----
+function renderAdminSettings(){
+  const el=document.getElementById('admin-panel-settings');
+  el.innerHTML=`
+    <h2 style="margin-bottom:1.25rem">Settings</h2>
+    <div class="form-card" style="max-width:480px">
+      <h3>Change Admin Password</h3>
+      <div id="settings-msg"></div>
+      <div class="form-group" style="margin-bottom:.85rem"><label>Current Username</label><input type="text" id="set-admin-user" placeholder="admin username" value="${DB.admin.username}"></div>
+      <div class="form-group" style="margin-bottom:.85rem"><label>Current Password</label><input type="password" id="set-admin-cur" placeholder="current password"></div>
+      <div class="form-group" style="margin-bottom:.85rem"><label>New Password</label><input type="password" id="set-admin-new" placeholder="new password"></div>
+      <div class="form-group" style="margin-bottom:1rem"><label>Confirm New Password</label><input type="password" id="set-admin-new2" placeholder="confirm new password"></div>
+      <button class="btn btn-primary btn-sm" onclick="changeAdminPassword()">Update Password</button>
+    </div>
+    <div class="form-card" style="max-width:480px;margin-top:1rem">
+      <h3>Change Admin Username</h3>
+      <div id="settings-user-msg"></div>
+      <div class="form-group" style="margin-bottom:.85rem"><label>Current Password</label><input type="password" id="set-user-pass" placeholder="current password"></div>
+      <div class="form-group" style="margin-bottom:1rem"><label>New Username</label><input type="text" id="set-user-new" placeholder="new username"></div>
+      <button class="btn btn-primary btn-sm" onclick="changeAdminUsername()">Update Username</button>
+    </div>
+    <div class="form-card" style="max-width:480px;margin-top:1rem;border-color:rgba(251,191,36,.2)">
+      <h3 style="color:var(--warn)">Reset Admin Password</h3>
+      <p style="font-size:.82rem;color:var(--text3);margin-bottom:.85rem">Resets admin password to <code style="color:var(--text2)">admin123</code> and username to <code style="color:var(--text2)">admin</code>. Use only if locked out.</p>
+      <div id="settings-reset-msg"></div>
+      <div class="form-group" style="margin-bottom:1rem"><label>Type RESET to confirm</label><input type="text" id="reset-confirm-word" placeholder="RESET" style="text-transform:uppercase"></div>
+      <button class="btn btn-warn btn-sm" onclick="hardResetAdmin()">Reset to Default</button>
+    </div>
+    <div class="form-card" style="max-width:480px;margin-top:1rem;border-color:rgba(56,189,248,.2)">
+      <h3 style="color:#7dd3fc">Cloud Connection (JSONBin)</h3>
+      <p style="font-size:.82rem;color:var(--text3);margin-bottom:.75rem">Your data is stored on JSONBin.io and shared across all devices automatically.</p>
+      <button class="btn btn-secondary btn-sm" onclick="resetSetup()">Change JSONBin Config</button>
+    </div>\`; 
+}
+function changeAdminPassword(){
+  const curUser=document.getElementById('set-admin-user').value.trim();
+  const cur=document.getElementById('set-admin-cur').value;
+  const nw=document.getElementById('set-admin-new').value;
+  const nw2=document.getElementById('set-admin-new2').value;
+  if(!cur||!nw||!nw2) return showMsg('settings-msg','Please fill in all fields.');
+  if(curUser!==DB.admin.username||cur!==DB.admin.password) return showMsg('settings-msg','Current credentials are incorrect.');
+  if(nw!==nw2) return showMsg('settings-msg','New passwords do not match.');
+  if(nw.length<6) return showMsg('settings-msg','Password must be at least 6 characters.');
+  DB.admin.password=nw;
+  document.getElementById('set-admin-cur').value='';
+  document.getElementById('set-admin-new').value='';
+  document.getElementById('set-admin-new2').value='';
+  saveDB();
+  showMsg('settings-msg','Password updated!','ok');
+}
+function changeAdminUsername(){
+  const pass=document.getElementById('set-user-pass').value;
+  const newUser=document.getElementById('set-user-new').value.trim();
+  if(!pass||!newUser) return showMsg('settings-user-msg','Please fill in all fields.');
+  if(pass!==DB.admin.password) return showMsg('settings-user-msg','Incorrect password.');
+  DB.admin.username=newUser;
+  document.getElementById('set-user-pass').value='';
+  document.getElementById('set-user-new').value='';
+  saveDB();
+  showMsg('settings-user-msg','Username updated to "'+newUser+'"!','ok');
+}
+function hardResetAdmin(){
+  const word=document.getElementById('reset-confirm-word').value.trim().toUpperCase();
+  if(word!=='RESET') return showMsg('settings-reset-msg','Type RESET in the box to confirm.','warn');
+  DB.admin.username='admin';
+  DB.admin.password='admin123';
+  document.getElementById('reset-confirm-word').value='';
+  saveDB();
+  showMsg('settings-reset-msg','Admin reset to admin / admin123.','ok');
+}
+
+// ============================================================
+// ADMIN SETTINGS — expose resetSetup
+// ============================================================
+function renderAdminSettings_extra(){}  // placeholder hook
+
+// ============================================================
+// STARTUP
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => startup());
+</script>
+
+
+</body>
+</html>
