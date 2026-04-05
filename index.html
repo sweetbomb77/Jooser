@@ -1408,7 +1408,7 @@ function addAlbum(){
 function deleteAlbum(id){DB.albums=DB.albums.filter(x=>x.id!==id);saveDB();renderAdminAlbums();}
  
 // ---- SONGS (multi-artist) ----
-let songAudioDataUrl=null,songAudioFileName=null,songArtDataUrl2=null,songDuration=null;
+let songAudioUrl=null,songAudioFileName=null,songArtDataUrl2=null,songDuration=null;
 function renderAdminSongs(){
   const el=document.getElementById('admin-panel-songs');
   el.innerHTML=`
@@ -1422,11 +1422,14 @@ function renderAdminSongs(){
           <label>Artists <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">— first selected = primary artist</span></label>
           <div id="song-artist-picker"></div>
         </div>
-        <div class="form-group full"><label>Audio File</label>
-          <div class="upload-zone"><input type="file" accept="audio/*" id="song-audio-file" onchange="previewSongAudio(this)">
-          <div class="upload-zone-label">🎵 Click to upload audio</div>
-          <div class="upload-zone-sub">MP3, WAV, OGG, FLAC, M4A</div>
-          <div id="song-audio-preview"></div></div>
+        <div class="form-group full"><label>Audio URL</label>
+          <p style="font-size:.75rem;color:var(--text3);margin-bottom:.5rem">Host your audio file on GitHub releases, Bunny CDN, or any URL. Paste the direct link below.</p>
+          <input type="text" id="song-audio-url" placeholder="https://example.com/song.mp3" style="margin-bottom:.5rem">
+          <div style="display:flex;gap:.5rem">
+            <input type="text" id="song-duration-manual" placeholder="Duration (optional, e.g. 3:45)" style="flex:1;margin-bottom:.85rem">
+            <button class="btn btn-secondary btn-sm" style="align-self:flex-end;margin-bottom:.85rem" onclick="testAudioUrl()">Test URL</button>
+          </div>
+          <div id="song-audio-preview"></div>
         </div>
         <div class="form-group full"><label>Song Art (optional)</label>
           <div class="upload-zone"><input type="file" accept="image/*" id="song-art-file" onchange="previewSongArt(this)">
@@ -1453,33 +1456,13 @@ function renderAdminSongs(){
   // Build artist picker after DOM is ready
   buildArtistPicker('song-artist-picker',[]);
 }
-function previewSongAudio(input){
-  if(!input.files[0])return;
-  const file=input.files[0];
-  songAudioFileName=file.name;
-  songDuration=null;
-  // Store as base64 so it persists in localStorage
-  document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">⏳ ${file.name} — loading...</div>`;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    songAudioDataUrl=e.target.result; // base64 data URL — persistable
-    // Read duration via a blob URL (lightweight, just for metadata)
-    const blobUrl=URL.createObjectURL(file);
-    const tmp=new Audio();
-    tmp.preload='metadata';
-    tmp.onloadedmetadata=()=>{
-      songDuration=fmtTime(tmp.duration);
-      document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ ${file.name} (${songDuration})</div>`;
-      URL.revokeObjectURL(blobUrl);
-    };
-    tmp.onerror=()=>{
-      document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ ${file.name}</div>`;
-      URL.revokeObjectURL(blobUrl);
-    };
-    tmp.src=blobUrl;
-  };
-  reader.onerror=()=>{ document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio" style="color:var(--danger)">✗ Failed to read file</div>`; };
-  reader.readAsDataURL(file);
+function testAudioUrl(){
+  const url=document.getElementById('song-audio-url').value.trim();
+  const dur=document.getElementById('song-duration-manual').value.trim();
+  if(!url) return showMsg('songs-form-msg','Please enter an audio URL.');
+  songAudioUrl=url;
+  if(dur) songDuration=dur;
+  document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ URL set: ${url.substring(url.lastIndexOf('/')+1)}</div>`;
 }
 function previewSongArt(input){if(!input.files[0])return;fileToDataUrl(input.files[0]).then(url=>{songArtDataUrl2=url;document.getElementById('song-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`});}
 function addSong(){
@@ -1487,7 +1470,7 @@ function addSong(){
   const albumId=document.getElementById('new-song-album').value;
   const artistIds=[...pickerSelectedIds]; // from the picker
   if(!title) return showMsg('songs-form-msg','Title is required.');
-  if(!songAudioDataUrl) return showMsg('songs-form-msg','Please upload an audio file.');
+  if(!songAudioUrl) return showMsg('songs-form-msg','Please enter an audio URL and click "Test URL".');
   if(artistIds.length===0) return showMsg('songs-form-msg','Please select at least one artist.');
   const alb=getAlbum(albumId);
   DB.songs.push({
@@ -1495,11 +1478,14 @@ function addSong(){
     artistIds, // array — first is primary
     artistId:artistIds[0], // backwards compat
     albumId,
-    audioUrl:songAudioDataUrl,artUrl:songArtDataUrl2,
+    audioUrl:songAudioUrl,artUrl:songArtDataUrl2,
     albumArtUrl:alb?alb.artUrl:null,
     duration:songDuration,emoji:'🎵'
   });
-  songAudioDataUrl=null;songAudioFileName=null;songArtDataUrl2=null;songDuration=null;
+  songAudioUrl=null;songAudioFileName=null;songArtDataUrl2=null;songDuration=null;
+  document.getElementById('song-audio-url').value='';
+  document.getElementById('song-duration-manual').value='';
+  document.getElementById('song-audio-preview').innerHTML='';
   saveDB();
   showMsg('songs-form-msg','Song added!','ok');
   setTimeout(()=>renderAdminSongs(),700);
