@@ -489,6 +489,7 @@ tr:active td{background:rgba(255,255,255,.02)}
       <div class="upload-zone-sub">JPG, PNG, WEBP</div>
       <div id="pl-art-preview"></div>
     </div>
+    <button class="btn btn-secondary btn-xs" style="margin-bottom:.85rem" onclick="window.open('https://imgbb.com/upload', '_blank')">Get URL</button>
     <div style="display:flex;gap:.65rem">
       <button class="btn btn-primary" style="flex:1" onclick="createPlaylist()">Create</button>
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-create-playlist')">Cancel</button>
@@ -1355,6 +1356,7 @@ function renderAdminArtists(){
           <div class="upload-zone-label">📷 Click to upload photo</div>
           <div class="upload-zone-sub">JPG, PNG, WEBP</div>
           <div id="art-art-preview"></div></div>
+          <button class="btn btn-secondary btn-xs" style="margin-top:.5rem" onclick="window.open('https://imgbb.com/upload', '_blank')">Get URL</button>
         </div>
       </div>
       <div id="art-form-msg" style="margin-top:.5rem"></div>
@@ -1400,6 +1402,7 @@ function renderAdminAlbums(){
           <div class="upload-zone-label">🖼 Click to upload album art</div>
           <div class="upload-zone-sub">JPG, PNG, WEBP</div>
           <div id="alb-art-preview"></div></div>
+          <button class="btn btn-secondary btn-xs" style="margin-top:.5rem" onclick="window.open('https://imgbb.com/upload', '_blank')">Get URL</button>
         </div>
       </div>
       <div id="alb-form-msg" style="margin-top:.5rem"></div>
@@ -1448,6 +1451,7 @@ function renderAdminSongs(){
           <div style="display:flex;gap:.5rem">
             <input type="text" id="song-duration-manual" placeholder="Duration (optional, e.g. 3:45)" style="flex:1;margin-bottom:.85rem">
             <button class="btn btn-secondary btn-sm" style="align-self:flex-end;margin-bottom:.85rem" onclick="testAudioUrl()">Test URL</button>
+            <button class="btn btn-secondary btn-sm" style="align-self:flex-end;margin-bottom:.85rem" onclick="window.open('https://file.io/', '_blank')">Get URL</button>
           </div>
           <div id="song-audio-preview"></div>
         </div>
@@ -1456,6 +1460,7 @@ function renderAdminSongs(){
           <div class="upload-zone-label">🖼 Click to upload art</div>
           <div class="upload-zone-sub">JPG, PNG, WEBP — uses album art if blank</div>
           <div id="song-art-preview"></div></div>
+          <button class="btn btn-secondary btn-xs" style="margin-top:.5rem" onclick="window.open('https://imgbb.com/upload', '_blank')">Get URL</button>
         </div>
       </div>
       <div id="songs-form-msg" style="margin-top:.5rem"></div>
