@@ -511,12 +511,10 @@ tr:active td{background:rgba(255,255,255,.02)}
  
 <script>
 // ============================================================
-// JSONBIN PERSISTENCE
+// JSONSTORAGE PERSISTENCE
 // ============================================================
-const JSONBIN_KEY = '$2a$10$ixipsMfRu2xR3cpMeTA8q.6YURPTJYYxgw4ppN8j7X0B8dadGR03W';
-const JSONBIN_BIN = '69bea0e2aa77b81da905f53d';
-const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN}`;
-const JSONBIN_HEADERS = { 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Versioning':'false' };
+const JSONSTORAGE_URL = 'https://api.jsonstorage.net/v1/json';
+const JSONSTORAGE_HEADERS = { 'Content-Type':'application/json' };
  
 let isSyncing = false;
  
@@ -543,16 +541,31 @@ function showToast(msg, type='ok'){
   t._timer = setTimeout(() => t.classList.add('hidden'), 5000);
 }
  
+let storageId = localStorage.getItem('jooser_storage_id') || null;
+
 async function saveDB(){
   if(isSyncing) return;
   isSyncing = true;
   try {
-    const r = await fetch(JSONBIN_URL, {
-      method: 'PUT',
-      headers: JSONBIN_HEADERS,
+    let url, method;
+    if(storageId){
+      url = `${JSONSTORAGE_URL}/${storageId}`;
+      method = 'PUT';
+    } else {
+      url = JSONSTORAGE_URL;
+      method = 'POST';
+    }
+    const r = await fetch(url, {
+      method: method,
+      headers: JSONSTORAGE_HEADERS,
       body: JSON.stringify(DB)
     });
     if(!r.ok){ const t=await r.text(); throw new Error(r.status+' '+t); }
+    if(!storageId){
+      const resp = await r.json();
+      storageId = resp.uri.split('/').pop();
+      localStorage.setItem('jooser_storage_id', storageId);
+    }
     console.log('saveDB success');
   } catch(e) {
     console.error('saveDB failed:', e);
@@ -564,37 +577,44 @@ async function saveDB(){
  
 function startPolling(){
   setInterval(async () => {
-    if(isSyncing) return;
+    if(isSyncing || !storageId) return;
     try {
-      const r = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
+      const r = await fetch(`${JSONSTORAGE_URL}/${storageId}`);
       if(!r.ok) return;
-      const j = await r.json();
-      if(j && j.record && j.record.admin){
-        const remote = JSON.stringify(j.record);
-        const local = JSON.stringify(DB);
-        if(remote !== local){ Object.assign(DB, j.record); refreshCurrentView(); }
+      const remote = await r.json();
+      if(remote && remote.admin){
+        const remoteStr = JSON.stringify(remote);
+        const localStr = JSON.stringify(DB);
+        if(remoteStr !== localStr){
+          Object.assign(DB, remote);
+          refreshCurrentView();
+        }
       }
     } catch(e) {}
   }, 10000);
 }
  
-function resetSetup(){ location.reload(); }
+function resetSetup(){
+  localStorage.removeItem('jooser_storage_id');
+  storageId = null;
+  location.reload();
+}
  
 async function startup(){
   try {
-    const r = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
-    if(r.ok){
-      const j = await r.json();
-      if(j && j.record && j.record.admin){
-        Object.assign(DB, j.record);
-        showToast('Synced', 'ok');
-        refreshCurrentView();
-      } else {
-        await saveDB();
-        showToast('Cloud ready', 'ok');
+    if(storageId){
+      const r = await fetch(`${JSONSTORAGE_URL}/${storageId}`);
+      if(r.ok){
+        const data = await r.json();
+        if(data && data.admin){
+          Object.assign(DB, data);
+          showToast('Synced', 'ok');
+          refreshCurrentView();
+        }
       }
-    } else {
-      // 400/404 = empty bin, push defaults
+    }
+    // If no storageId or fetch failed, create new storage
+    if(!storageId || !DB.admin){
       await saveDB();
       showToast('Cloud ready', 'ok');
     }
