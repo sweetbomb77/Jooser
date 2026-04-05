@@ -553,9 +553,10 @@ async function saveDB(){
       body: JSON.stringify(DB)
     });
     if(!r.ok){ const t=await r.text(); throw new Error(r.status+' '+t); }
+    console.log('saveDB success');
   } catch(e) {
-    console.warn('saveDB failed:', e);
-    showToast('Save failed.', 'warn');
+    console.error('saveDB failed:', e);
+    showToast('Save failed: '+e.message, 'warn');
   } finally {
     isSyncing = false;
   }
