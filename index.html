@@ -49,6 +49,7 @@ textarea:focus{border-color:var(--accent2)}
 select{width:100%;padding:.75rem .9rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none}
 select:focus{border-color:var(--accent2)}
 .btn{padding:.75rem 1rem;border-radius:var(--radius-sm);font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;border:none;transition:all .18s;letter-spacing:.03em;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:44px;-webkit-tap-highlight-color:transparent}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
 .btn-full{width:100%}
 .btn-primary{background:var(--accent3);color:white}
 .btn-primary:hover,.btn-primary:active{background:var(--accent2)}
@@ -141,7 +142,7 @@ select:focus{border-color:var(--accent2)}
 .card-name{font-size:.83rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-meta{font-size:.7rem;color:var(--text3);margin-top:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
  
-/* Song rows — touch friendly */
+/* Song rows */
 .song-row{display:flex;align-items:center;gap:.6rem;padding:.65rem .5rem;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
 .song-row:active,.song-row.playing{background:rgba(124,58,237,.15)}
 .song-num{width:20px;text-align:center;font-size:.76rem;color:var(--text3);flex-shrink:0}
@@ -150,7 +151,6 @@ select:focus{border-color:var(--accent2)}
 .song-info{flex:1;min-width:0}
 .song-title{font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .song-artist{font-size:.73rem;color:var(--text3)}
-/* On mobile: always show + playlist btn, not hover-only */
 .song-actions{display:flex;gap:.25rem;flex-shrink:0}
 .song-dur{font-size:.73rem;color:var(--text3);flex-shrink:0}
 .playing-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 1s infinite}
@@ -186,7 +186,6 @@ tr:active td{background:rgba(255,255,255,.02)}
 .tag{display:inline-block;padding:.18rem .55rem;border-radius:20px;font-size:.7rem;font-weight:500}
 .tag-active{background:rgba(74,222,128,.1);color:var(--success)}
 .tag-used{background:rgba(251,191,36,.1);color:var(--warn)}
-.tag-user{background:rgba(56,189,248,.1);color:#7dd3fc}
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem}
 .stat-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--accent)}
@@ -223,66 +222,44 @@ tr:active td{background:rgba(255,255,255,.02)}
 .pl-cover{width:100px;height:100px;border-radius:var(--radius);background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;overflow:hidden}
 .pl-cover img{width:100%;height:100%;object-fit:cover}
  
-/* RESET PASSWORD MODAL */
-.reset-step{display:none}.reset-step.active{display:block}
- 
 /* ── MOBILE RESPONSIVE ── */
 @media(max-width:640px){
-  /* Hide desktop sidebar, show bottom nav */
   .sidebar{display:none}
   .bottom-nav{display:flex}
-  /* Hide desktop player right section to save space */
   .player-right{display:none}
-  /* Compact header on mobile */
   .header-search{max-width:none}
   .user-badge{display:none}
-  /* Show sign out as icon */
   .signout-label{display:none}
-  /* Compact grid */
   .grid-cards{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.6rem}
-  /* Full-width cards look better */
   .section-title{font-size:1.2rem}
-  /* Admin: stack sidebar on top */
   .admin-body{flex-direction:column}
   .admin-sidebar{width:100%;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:.5rem;height:auto;border-right:none;border-bottom:1px solid var(--border);gap:.25rem;min-height:52px}
   .admin-sidebar .sidebar-label{display:none}
   .admin-sidebar .nav-item{white-space:nowrap;flex-shrink:0;font-size:.78rem;padding:.4rem .65rem;min-height:36px}
   .admin-content{padding:.85rem 1rem}
-  /* Stack form grid on mobile */
   .form-grid{grid-template-columns:1fr}
   .form-group.full{grid-column:1}
-  /* Stat row 2 cols on mobile */
   .stat-row{grid-template-columns:repeat(2,1fr)}
-  /* Player bar compact */
   .player-bar{padding:0 .75rem;gap:.5rem}
   .player-info{max-width:130px}
-  /* Table scroll */
   .admin-content table{font-size:.78rem}
   td,th{padding:.4rem .5rem}
-  /* Modal full width bottom sheet */
   .modal{border-radius:20px 20px 0 0}
-  /* Toast above bottom nav */
   .toast{bottom:calc(var(--bottom-nav-h) + var(--player-h) + .75rem)}
 }
- 
 @media(min-width:641px){
-  /* Desktop: sidebar visible, no bottom nav */
   .bottom-nav{display:none!important}
-  /* Desktop: hover shows song actions */
   .song-actions{display:none}
   .song-row:hover .song-actions{display:flex}
-  /* Desktop: modal centered not bottom sheet */
   .modal-overlay{align-items:center;padding:1rem}
   .modal{border-radius:20px;padding-bottom:1.5rem}
   .modal-handle{display:none}
-  /* Desktop: toast near bottom center */
   .toast{bottom:1.5rem}
 }
 </style>
 </head>
 <body>
  
-<!-- ======= AUTH ======= -->
 <div id="screen-auth" class="screen active">
   <div>
     <div class="auth-logo">◆ Jooser</div>
@@ -303,7 +280,6 @@ tr:active td{background:rgba(255,255,255,.02)}
       <button class="btn btn-secondary btn-full" onclick="switchTab('guest')">Continue as Guest</button>
       <div style="text-align:center;margin-top:.85rem;display:flex;justify-content:center;gap:1rem">
         <button onclick="showAdminLogin()" style="background:none;border:none;color:var(--text3);font-size:.73rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif">Admin Portal</button>
-        <button onclick="showResetModal()" style="background:none;border:none;color:var(--text3);font-size:.73rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif">Forgot password?</button>
       </div>
     </div>
     <div id="tab-signup" class="auth-panel">
@@ -320,7 +296,6 @@ tr:active td{background:rgba(255,255,255,.02)}
     </div>
   </div>
  
-  <!-- Admin login -->
   <div id="admin-login-overlay" class="modal-overlay hidden">
     <div class="modal">
       <div class="modal-handle"></div>
@@ -334,38 +309,8 @@ tr:active td{background:rgba(255,255,255,.02)}
       </div>
     </div>
   </div>
- 
-  <!-- Reset password modal -->
-  <div id="reset-modal" class="modal-overlay hidden">
-    <div class="modal">
-      <div class="modal-handle"></div>
-      <h3>Reset Password</h3>
-      <div id="reset-msg"></div>
-      <!-- Step 1: enter username + access code -->
-      <div id="reset-step1" class="reset-step active">
-        <p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem">Enter your username and a fresh unused access code to verify your identity.</p>
-        <label>Username</label><input type="text" id="reset-username" placeholder="your username">
-        <label>Access Code (unused)</label><input type="text" id="reset-code" placeholder="XXXXXX" style="text-transform:uppercase">
-        <div style="display:flex;gap:.65rem;margin-top:.25rem">
-          <button class="btn btn-primary" style="flex:1" onclick="resetStep1()">Verify</button>
-          <button class="btn btn-secondary" style="flex:1" onclick="closeModal('reset-modal')">Cancel</button>
-        </div>
-      </div>
-      <!-- Step 2: set new password -->
-      <div id="reset-step2" class="reset-step">
-        <p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem">Identity verified! Set a new password for <strong id="reset-verified-user" style="color:var(--text)"></strong>.</p>
-        <label>New Password</label><input type="password" id="reset-new-pass" placeholder="new password">
-        <label>Confirm Password</label><input type="password" id="reset-confirm-pass" placeholder="confirm password">
-        <div style="display:flex;gap:.65rem;margin-top:.25rem">
-          <button class="btn btn-primary" style="flex:1" onclick="resetStep2()">Reset Password</button>
-          <button class="btn btn-secondary" style="flex:1" onclick="closeModal('reset-modal')">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
  
-<!-- ======= APP ======= -->
 <div id="screen-app" class="screen">
   <div class="app-header">
     <div class="header-logo">◆ Jooser</div>
@@ -394,7 +339,6 @@ tr:active td{background:rgba(255,255,255,.02)}
     </div>
     <div class="main-content" id="main-content"></div>
   </div>
-  <!-- Bottom nav (mobile only) -->
   <nav class="bottom-nav" id="bottom-nav">
     <button class="bottom-nav-item active" data-page="home" onclick="mobileNav('home',this)">
       <span class="bottom-nav-icon">🏠</span><span>Home</span>
@@ -441,7 +385,6 @@ tr:active td{background:rgba(255,255,255,.02)}
   </div>
 </div>
  
-<!-- ======= ADMIN ======= -->
 <div id="screen-admin" class="screen">
   <div class="admin-header">
     <div style="display:flex;align-items:center;gap:.75rem">
@@ -474,7 +417,6 @@ tr:active td{background:rgba(255,255,255,.02)}
   </div>
 </div>
  
-<!-- MODALS -->
 <div id="modal-create-playlist" class="modal-overlay hidden">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -485,13 +427,12 @@ tr:active td{background:rgba(255,255,255,.02)}
     <label>Playlist Art (optional)</label>
     <div class="upload-zone" style="margin-bottom:.85rem">
       <input type="file" accept="image/*" id="pl-art-file" onchange="previewPlArt(this)">
-      <div class="upload-zone-label">🖼 Click to upload playlist art</div>
+      <div class="upload-zone-label">🖼 Click to choose playlist art</div>
       <div class="upload-zone-sub">JPG, PNG, WEBP</div>
       <div id="pl-art-preview"></div>
     </div>
-    <button class="btn btn-secondary btn-xs" style="margin-bottom:.85rem" onclick="window.open('https://imgbb.com/upload', '_blank')">Get URL</button>
     <div style="display:flex;gap:.65rem">
-      <button class="btn btn-primary" style="flex:1" onclick="createPlaylist()">Create</button>
+      <button class="btn btn-primary" id="btn-create-pl" style="flex:1" onclick="createPlaylist()">Create Playlist</button>
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-create-playlist')">Cancel</button>
     </div>
   </div>
@@ -506,141 +447,100 @@ tr:active td{background:rgba(255,255,255,.02)}
 </div>
  
 <audio id="audio-player"></audio>
- 
 <div id="toast" class="hidden toast"></div>
- 
- 
+
+
+<script type="module">
+  // 1. Import Firebase tools directly from Google's CDN
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
+
+  // 2. Your specific app configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAzZFWx0u24TJ0tPGimPCGiJJUY6TB_uq4",
+    authDomain: "jooser-app.firebaseapp.com",
+    projectId: "jooser-app",
+    storageBucket: "jooser-app.firebasestorage.app",
+    messagingSenderId: "72994376813",
+    appId: "1:72994376813:web:76043f3c6e9f26105f0364"
+  };
+
+  // 3. Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  // 4. Attach Firebase to the global window so your functions can talk to it
+  window.fb = {
+    auth, signIn: signInWithEmailAndPassword, signUp: createUserWithEmailAndPassword, signOut,
+    db, doc, setDoc, getDoc, onSnapshot,
+    storage, ref, uploadBytes, getDownloadURL
+  };
+</script>
+
 <script>
 // ============================================================
-// JSONSTORAGE PERSISTENCE
+// APP STATE & FIREBASE SYNC 
 // ============================================================
-const JSONSTORAGE_URL = 'https://api.jsonstorage.net/v1/json';
-const JSONSTORAGE_HEADERS = { 'Content-Type':'application/json' };
- 
-let isSyncing = false;
- 
-const DB = {
+let DB = {
   admin: { username: 'admin', password: 'admin123' },
   users: [],
   accessCodes: [
     { code: 'WAVE2024', used: false, usedBy: null },
-    { code: 'MUSIC001', used: false, usedBy: null },
-    { code: 'STREAM42', used: false, usedBy: null },
-    { code: 'VIBE2025', used: false, usedBy: null },
-    { code: 'RESET001', used: false, usedBy: null },
+    { code: 'MUSIC001', used: false, usedBy: null }
   ],
   artists: [], albums: [], songs: [], playlists: [], recentlyPlayed: [],
 };
- 
-function showToast(msg, type='ok'){
-  const t = document.getElementById('toast');
-  if(!t) return;
-  t.textContent = msg;
-  t.className = 'toast toast-' + type;
-  t.classList.remove('hidden');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.add('hidden'), 5000);
-}
- 
-let storageId = localStorage.getItem('jooser_storage_id') || null;
 
-async function saveDB(){
-  if(isSyncing) return;
+let isSyncing = false;
+
+async function saveDB() {
+  if (isSyncing || !window.fb) return;
   isSyncing = true;
   try {
-    let url, method;
-    if(storageId){
-      url = `${JSONSTORAGE_URL}/${storageId}`;
-      method = 'PUT';
-    } else {
-      url = JSONSTORAGE_URL;
-      method = 'POST';
-    }
-    const r = await fetch(url, {
-      method: method,
-      headers: JSONSTORAGE_HEADERS,
-      body: JSON.stringify(DB)
-    });
-    if(!r.ok){ const t=await r.text(); throw new Error(r.status+' '+t); }
-    if(!storageId){
-      const resp = await r.json();
-      storageId = resp.uri.split('/').pop();
-      localStorage.setItem('jooser_storage_id', storageId);
-    }
-    console.log('saveDB success');
+    await window.fb.setDoc(window.fb.doc(window.fb.db, "app_data", "main"), DB);
+    console.log('Firebase save success');
   } catch(e) {
-    console.error('saveDB failed:', e);
-    showToast('Save failed: '+e.message, 'warn');
+    console.error('Firebase save failed:', e);
+    showToast('Save failed: ' + e.message, 'warn');
   } finally {
     isSyncing = false;
   }
 }
- 
-function startPolling(){
-  setInterval(async () => {
-    if(isSyncing || !storageId) return;
-    try {
-      const r = await fetch(`${JSONSTORAGE_URL}/${storageId}`);
-      if(!r.ok) return;
-      const remote = await r.json();
-      if(remote && remote.admin){
-        const remoteStr = JSON.stringify(remote);
-        const localStr = JSON.stringify(DB);
-        if(remoteStr !== localStr){
-          Object.assign(DB, remote);
-          refreshCurrentView();
-        }
-      }
-    } catch(e) {}
-  }, 10000);
-}
- 
-function resetSetup(){
-  localStorage.removeItem('jooser_storage_id');
-  storageId = null;
-  location.reload();
-}
- 
-async function startup(){
-  try {
-    if(storageId){
-      const r = await fetch(`${JSONSTORAGE_URL}/${storageId}`);
-      if(r.ok){
-        const data = await r.json();
-        if(data && data.admin){
-          Object.assign(DB, data);
-          showToast('Synced', 'ok');
-          refreshCurrentView();
-        }
-      }
+
+function startLiveSync() {
+  window.fb.onSnapshot(window.fb.doc(window.fb.db, "app_data", "main"), (docSnap) => {
+    if (docSnap.exists()) {
+      const remoteData = docSnap.data();
+      Object.assign(DB, remoteData);
+      refreshCurrentView();
+    } else {
+      saveDB();
     }
-    // If no storageId or fetch failed, create new storage
-    if(!storageId || !DB.admin){
-      await saveDB();
-      showToast('Cloud ready', 'ok');
-    }
-  } catch(e) {
-    console.warn('startup sync failed:', e);
-    showToast('Running offline', 'warn');
+  });
+}
+
+function startup() {
+  if (!window.fb) {
+    setTimeout(startup, 100); 
+    return;
   }
-  startPolling();
+  startLiveSync();
+  showToast('Connected to Firebase', 'ok');
 }
  
 // ============================================================
-// ============================================================
-// STATE
+// GLOBAL STATE & AUTH
 // ============================================================
 let currentUser=null, currentUserType=null, currentUserId=null;
 let currentSongId=null;
 let currentQueue=[], currentQueueIdx=-1, originalQueue=[];
 let isPlaying=false, isShuffle=false, isRepeat=false;
-let plArtDataUrl=null;
-let resetVerifiedUser=null; // for password reset flow
 const audio=document.getElementById('audio-player');
  
-// ============================================================
-// AUTH
-// ============================================================
 function switchTab(tab){
   ['login','signup','guest'].forEach((t,i)=>{
     document.querySelectorAll('.auth-tab')[i].classList.toggle('active',t===tab);
@@ -654,40 +554,61 @@ function showMsg(id,text,type='err'){
 }
 function clearMsg(id){const el=document.getElementById(id);if(el)el.innerHTML='';}
  
-function doLogin(){
-  const u=document.getElementById('login-user').value.trim();
-  const p=document.getElementById('login-pass').value;
-  if(!u||!p) return showMsg('auth-msg','Please fill in all fields.');
-  const user=DB.users.find(x=>x.username.toLowerCase()===u.toLowerCase()&&x.password===p);
-  if(!user) return showMsg('auth-msg','Incorrect username or password.');
-  currentUser=user.username; currentUserType='user'; currentUserId=user.id;
-  enterApp();
-}
-function doSignup(){
-  const u=document.getElementById('signup-user').value.trim();
-  const p=document.getElementById('signup-pass').value;
-  const p2=document.getElementById('signup-pass2').value;
-  const c=document.getElementById('signup-code').value.trim().toUpperCase();
-  if(!u||!p||!p2||!c) return showMsg('auth-msg','Please fill in all fields.');
-  if(p!==p2) return showMsg('auth-msg','Passwords do not match.');
+async function doSignup(){
+  const u = document.getElementById('signup-user').value.trim();
+  const p = document.getElementById('signup-pass').value;
+  const p2 = document.getElementById('signup-pass2').value;
+  const c = document.getElementById('signup-code').value.trim().toUpperCase();
+  
+  if(!u || !p || !p2 || !c) return showMsg('auth-msg', 'Please fill in all fields.');
+  if(p !== p2) return showMsg('auth-msg', 'Passwords do not match.');
   if(DB.users.find(x=>x.username.toLowerCase()===u.toLowerCase())) return showMsg('auth-msg','Username already taken.');
-  const code=DB.accessCodes.find(x=>x.code===c&&!x.used);
-  if(!code) return showMsg('auth-msg','Invalid or already used access code.');
-  code.used=true; code.usedBy=u;
-  const id='u'+Date.now();
-  DB.users.push({id,username:u,password:p,codeUsed:true,type:'user'});
-  saveDB();
-  currentUser=u; currentUserType='user'; currentUserId=id;
-  enterApp();
+
+  const code = DB.accessCodes.find(x => x.code === c && !x.used);
+  if(!code) return showMsg('auth-msg', 'Invalid or used access code.');
+
+  try {
+    const fakeEmail = `${u.toLowerCase()}@jooser.app`;
+    const userCred = await window.fb.signUp(window.fb.auth, fakeEmail, p);
+    
+    code.used = true; 
+    code.usedBy = u;
+    DB.users.push({ id: userCred.user.uid, username: u, codeUsed: true, type: 'user' });
+    saveDB();
+
+    currentUser = u; currentUserType = 'user'; currentUserId = userCred.user.uid;
+    enterApp();
+  } catch (error) {
+    if (error.code === 'auth/email-already-in-use') showMsg('auth-msg', 'Username already taken.');
+    else if (error.code === 'auth/weak-password') showMsg('auth-msg', 'Password must be at least 6 characters.');
+    else showMsg('auth-msg', 'Error: ' + error.message);
+  }
 }
+
+async function doLogin(){
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  
+  if(!u || !p) return showMsg('auth-msg', 'Please fill in all fields.');
+  try {
+    const fakeEmail = `${u.toLowerCase()}@jooser.app`;
+    const userCred = await window.fb.signIn(window.fb.auth, fakeEmail, p);
+    currentUser = u; currentUserType = 'user'; currentUserId = userCred.user.uid;
+    enterApp();
+  } catch (error) {
+    showMsg('auth-msg', 'Incorrect username or password.');
+  }
+}
+
 function doGuest(){
   const c=document.getElementById('guest-code').value.trim().toUpperCase();
   if(!c) return showMsg('auth-msg','Please enter an access code.');
   const code=DB.accessCodes.find(x=>x.code===c&&!x.used);
-  if(!code) return showMsg('auth-msg','Invalid or already used access code.');
+  if(!code) return showMsg('auth-msg','Invalid or used access code.');
   currentUser='Guest'; currentUserType='guest'; currentUserId='guest';
   enterApp();
 }
+
 function enterApp(){
   document.getElementById('header-username').innerHTML=`<span class="user-badge">${currentUserType==='guest'?'👤 Guest':'🎧 '+currentUser}</span>`;
   showScreen('app');
@@ -695,12 +616,17 @@ function enterApp(){
   navTo('home',document.querySelector('[data-page="home"]'));
   clearMsg('auth-msg');
 }
-function logout(){
-  currentUser=null; currentUserType=null; currentUserId=null;
-  audio.pause(); audio.src=''; isPlaying=false; currentSongId=null; currentQueueIdx=-1;
-  document.getElementById('search-input').value='';
-  showScreen('auth');
+
+async function logout(){
+  try {
+    if (window.fb) await window.fb.signOut(window.fb.auth);
+    currentUser=null; currentUserType=null; currentUserId=null;
+    audio.pause(); audio.src=''; isPlaying=false; currentSongId=null; currentQueueIdx=-1;
+    document.getElementById('search-input').value='';
+    showScreen('auth');
+  } catch (error) { console.error(error); }
 }
+
 function showAdminLogin(){document.getElementById('admin-login-overlay').classList.remove('hidden');}
 function hideAdminLogin(){document.getElementById('admin-login-overlay').classList.add('hidden');clearMsg('admin-login-msg');}
 function doAdminLogin(){
@@ -720,58 +646,11 @@ function showScreen(s){
 }
  
 // ============================================================
-// PASSWORD RESET
-// ============================================================
-function showResetModal(){
-  resetVerifiedUser=null;
-  clearMsg('reset-msg');
-  document.getElementById('reset-username').value='';
-  document.getElementById('reset-code').value='';
-  document.getElementById('reset-new-pass').value='';
-  document.getElementById('reset-confirm-pass').value='';
-  document.getElementById('reset-step1').classList.add('active');
-  document.getElementById('reset-step2').classList.remove('active');
-  document.getElementById('reset-modal').classList.remove('hidden');
-}
-function resetStep1(){
-  const username=document.getElementById('reset-username').value.trim();
-  const code=document.getElementById('reset-code').value.trim().toUpperCase();
-  if(!username||!code) return showMsg('reset-msg','Please fill in all fields.');
-  // Check user exists
-  const user=DB.users.find(x=>x.username.toLowerCase()===username.toLowerCase());
-  if(!user) return showMsg('reset-msg','No account found with that username.');
-  // Check code is valid & unused
-  const codeEntry=DB.accessCodes.find(x=>x.code===code&&!x.used);
-  if(!codeEntry) return showMsg('reset-msg','Invalid or already used access code.');
-  // Consume the code
-  codeEntry.used=true; codeEntry.usedBy=username+' (reset)';
-  saveDB();
-  resetVerifiedUser=user;
-  clearMsg('reset-msg');
-  document.getElementById('reset-verified-user').textContent=user.username;
-  document.getElementById('reset-step1').classList.remove('active');
-  document.getElementById('reset-step2').classList.add('active');
-}
-function resetStep2(){
-  const np=document.getElementById('reset-new-pass').value;
-  const np2=document.getElementById('reset-confirm-pass').value;
-  if(!np||!np2) return showMsg('reset-msg','Please fill in both fields.');
-  if(np!==np2) return showMsg('reset-msg','Passwords do not match.');
-  if(np.length<6) return showMsg('reset-msg','Password must be at least 6 characters.');
-  resetVerifiedUser.password=np;
-  saveDB();
-  closeModal('reset-modal');
-  showMsg('auth-msg','Password reset! You can now sign in.','ok');
-}
- 
-// ============================================================
-// NAV
+// NAV & RENDERING
 // ============================================================
 function navTo(page,btn){
   document.querySelectorAll('#app-sidebar .nav-item').forEach(n=>n.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  // Sync bottom nav
-  const basePages=['home','artists','albums','songs'];
   document.querySelectorAll('.bottom-nav-item').forEach(b=>{
     b.classList.toggle('active', b.dataset.page===page);
   });
@@ -784,14 +663,9 @@ function navTo(page,btn){
   else if(page.startsWith('playlist:')) renderPlaylistPage(c,page.split(':')[1]);
 }
  
-// ============================================================
-// MOBILE NAV — syncs bottom nav + sidebar nav
-// ============================================================
 function mobileNav(page, btn){
-  // Update bottom nav active state
   document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  // Sync sidebar
   document.querySelectorAll('#app-sidebar .nav-item').forEach(n => n.classList.remove('active'));
   const sideBtn = document.querySelector(`#app-sidebar [data-page="${page}"]`);
   if(sideBtn) sideBtn.classList.add('active');
@@ -829,11 +703,7 @@ function renderLibraryPage(c){
   `;
 }
  
-// ============================================================
-// LIVE REFRESH (called by Firestore listener)
-// ============================================================
 function refreshCurrentView(){
-  // Only refresh if we're on the app screen
   if(!document.getElementById('screen-app').classList.contains('active')) return;
   const active=document.querySelector('#app-sidebar .nav-item.active');
   const page=active?active.dataset.page:'home';
@@ -856,7 +726,20 @@ function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(
 function timeOfDay(){const h=new Date().getHours();return h<12?'morning':h<18?'afternoon':'evening';}
 function fileToDataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});}
  
-// Return display string for all artists on a song
+// === FIREBASE DIRECT UPLOAD HELPER ===
+async function uploadFileToFirebase(file, folderName) {
+  if (!file || !window.fb) return null;
+  try {
+    const uniqueName = Date.now() + '_' + file.name;
+    const storageRef = window.fb.ref(window.fb.storage, `${folderName}/${uniqueName}`);
+    await window.fb.uploadBytes(storageRef, file);
+    return await window.fb.getDownloadURL(storageRef);
+  } catch (error) {
+    console.error("Upload failed:", error);
+    throw error;
+  }
+}
+
 function songArtistNames(song){
   const ids=song.artistIds||[song.artistId];
   return ids.map(id=>{const a=getArtist(id);return a?a.name:'Unknown';}).join(', ');
@@ -876,9 +759,6 @@ function songRowHtml(song,idx,queueList){
   </div>`;
 }
  
-// ============================================================
-// RENDER
-// ============================================================
 function renderHome(c){
   c.innerHTML=`
     <div style="margin-bottom:1.5rem">
@@ -943,17 +823,12 @@ function renderRecent(c){
  
 function openArtist(id){
   const art=getArtist(id); if(!art) return;
-  // Songs where this artist is the PRIMARY (first) artist
   const mainSongs=DB.songs.filter(s=>{const ids=s.artistIds||[s.artistId];return ids[0]===id;});
-  // Albums where this artist is the main album artist
   const mainAlbums=DB.albums.filter(x=>x.artistId===id);
- 
-  // "Appears on": songs/albums where this artist is a FEATURED artist (not primary)
   const featSongs=DB.songs.filter(s=>{
     const ids=s.artistIds||[s.artistId];
     return ids.includes(id)&&ids[0]!==id;
   });
-  // Deduplicate by album (or single if no album)
   const appearsOnItems=[];
   const seenAlbums=new Set();
   featSongs.forEach(s=>{
@@ -964,7 +839,6 @@ function openArtist(id){
         if(al) appearsOnItems.push({type:'album',item:al});
       }
     } else {
-      // treat as a single
       appearsOnItems.push({type:'single',item:s});
     }
   });
@@ -1007,7 +881,6 @@ function openArtist(id){
             <div class="card-meta">${mainArt?mainArt.name:''} · ${item.year||''}</div>
           </div>`;
         } else {
-          // single song
           const al=getAlbum(item.albumId);
           const thumb=item.artUrl||(al?al.artUrl:null);
           const qStr=JSON.stringify([item.id]).replace(/"/g,'&quot;');
@@ -1045,9 +918,6 @@ function openAlbum(id){
     ${songs.length>0?`<div>${songs.map((s,i)=>songRowHtml(s,i,ids)).join('')}</div>`:`<div class="empty-state"><div>No songs in this album yet.</div></div>`}`;
 }
  
-// ============================================================
-// SEARCH
-// ============================================================
 function doSearch(q){
   if(!q.trim()){navTo('home',document.querySelector('[data-page="home"]'));return;}
   const ql=q.toLowerCase();
@@ -1065,8 +935,10 @@ function doSearch(q){
 }
  
 // ============================================================
-// PLAYLISTS
+// PLAYLISTS (With Direct Upload)
 // ============================================================
+let selectedPlArtFile = null;
+
 function getUserPlaylists(){return DB.playlists.filter(p=>p.userId===currentUserId);}
 function renderPlaylistNav(){
   const el=document.getElementById('playlist-nav'); if(!el) return;
@@ -1081,8 +953,8 @@ function renderPlaylistNav(){
 }
 function previewPlArt(input){
   if(!input.files[0]) return;
-  fileToDataUrl(input.files[0]).then(url=>{
-    plArtDataUrl=url;
+  selectedPlArtFile = input.files[0];
+  fileToDataUrl(selectedPlArtFile).then(url=>{
     document.getElementById('pl-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`;
   });
 }
@@ -1090,18 +962,35 @@ function showCreatePlaylist(){
   document.getElementById('pl-name').value='';
   document.getElementById('pl-desc').value='';
   document.getElementById('pl-art-preview').innerHTML='';
-  plArtDataUrl=null;
+  selectedPlArtFile = null;
+  document.getElementById('pl-art-file').value='';
   clearMsg('create-playlist-msg');
   document.getElementById('modal-create-playlist').classList.remove('hidden');
 }
-function createPlaylist(){
+async function createPlaylist(){
   const name=document.getElementById('pl-name').value.trim();
   if(!name) return showMsg('create-playlist-msg','Please enter a name.');
-  DB.playlists.push({id:'pl'+Date.now(),name,desc:document.getElementById('pl-desc').value.trim(),artUrl:plArtDataUrl,userId:currentUserId,songs:[]});
-  plArtDataUrl=null;
-  saveDB();
-  closeModal('modal-create-playlist');
-  renderPlaylistNav();
+  
+  const btn = document.getElementById('btn-create-pl');
+  btn.disabled = true;
+  btn.textContent = 'Uploading...';
+
+  try {
+    let artUrl = null;
+    if(selectedPlArtFile) {
+      artUrl = await uploadFileToFirebase(selectedPlArtFile, 'playlists');
+    }
+    
+    DB.playlists.push({id:'pl'+Date.now(),name,desc:document.getElementById('pl-desc').value.trim(),artUrl:artUrl,userId:currentUserId,songs:[]});
+    saveDB();
+    closeModal('modal-create-playlist');
+    renderPlaylistNav();
+  } catch (error) {
+    showMsg('create-playlist-msg', 'Error creating playlist.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create Playlist';
+  }
 }
 function deletePlaylist(id){
   DB.playlists=DB.playlists.filter(x=>x.id!==id);
@@ -1267,7 +1156,7 @@ audio.addEventListener('play',()=>{isPlaying=true;updatePlayBtn();});
 audio.addEventListener('pause',()=>{isPlaying=false;updatePlayBtn();});
  
 // ============================================================
-// ADMIN
+// ADMIN (WITH DIRECT UPLOADS)
 // ============================================================
 function adminNav(panel,btn){
   document.querySelectorAll('#screen-admin .nav-item').forEach(n=>n.classList.remove('active'));
@@ -1318,7 +1207,6 @@ function pickerToggle(containerId,artistId,checked){
   } else {
     pickerSelectedIds=pickerSelectedIds.filter(x=>x!==artistId);
   }
-  // update selected style
   const item=document.getElementById(`pitem-${containerId}-${artistId}`);
   if(item) item.classList.toggle('selected',checked);
   updatePickerPreview(containerId);
@@ -1339,7 +1227,7 @@ function pickerRemove(containerId,artistId){
 }
  
 // ---- ARTISTS ----
-let artistArtDataUrl=null;
+let selectedArtistArtFile = null;
 function renderAdminArtists(){
   const el=document.getElementById('admin-panel-artists');
   el.innerHTML=`
@@ -1356,11 +1244,10 @@ function renderAdminArtists(){
           <div class="upload-zone-label">📷 Click to upload photo</div>
           <div class="upload-zone-sub">JPG, PNG, WEBP</div>
           <div id="art-art-preview"></div></div>
-          <button class="btn btn-secondary btn-xs" style="margin-top:.5rem" onclick="window.open('https://imgbb.com/upload', '_blank')">Get URL</button>
         </div>
       </div>
       <div id="art-form-msg" style="margin-top:.5rem"></div>
-      <button class="btn btn-primary btn-sm" style="margin-top:.85rem" onclick="addArtist()">Add Artist</button>
+      <button class="btn btn-primary btn-sm" id="btn-add-artist" style="margin-top:.85rem" onclick="addArtist()">Add Artist</button>
     </div>
     <table><thead><tr><th>Art</th><th>Name</th><th>Genre</th><th>Albums</th><th>Songs</th><th></th></tr></thead>
     <tbody>${DB.artists.map(a=>`<tr>
@@ -1371,22 +1258,44 @@ function renderAdminArtists(){
       <td><button class="btn btn-danger btn-xs" onclick="deleteArtist('${a.id}')">Delete</button></td>
     </tr>`).join('')}</tbody></table>`;
 }
-function previewArtistArt(input){if(!input.files[0])return;fileToDataUrl(input.files[0]).then(url=>{artistArtDataUrl=url;document.getElementById('art-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`});}
-function addArtist(){
+function previewArtistArt(input){
+  if(!input.files[0])return;
+  selectedArtistArtFile = input.files[0];
+  fileToDataUrl(selectedArtistArtFile).then(url=>{
+    document.getElementById('art-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`;
+  });
+}
+async function addArtist(){
   const name=document.getElementById('new-art-name').value.trim();
   const genre=document.getElementById('new-art-genre').value.trim();
   const bio=document.getElementById('new-art-bio').value.trim();
   if(!name) return showMsg('art-form-msg','Name is required.');
-  DB.artists.push({id:'a'+Date.now(),name,genre,bio,artUrl:artistArtDataUrl,emoji:'🎤'});
-  artistArtDataUrl=null;
-  saveDB();
-  showMsg('art-form-msg','Artist added!','ok');
-  setTimeout(()=>renderAdminArtists(),700);
+
+  const btn = document.getElementById('btn-add-artist');
+  btn.disabled = true;
+  btn.textContent = 'Uploading...';
+
+  try {
+    let artUrl = null;
+    if (selectedArtistArtFile) {
+      artUrl = await uploadFileToFirebase(selectedArtistArtFile, 'artists');
+    }
+    
+    DB.artists.push({id:'a'+Date.now(),name,genre,bio,artUrl:artUrl,emoji:'🎤'});
+    selectedArtistArtFile = null;
+    saveDB();
+    showMsg('art-form-msg','Artist added!','ok');
+    setTimeout(()=>renderAdminArtists(),700);
+  } catch (e) {
+    showMsg('art-form-msg', 'Error saving artist.');
+    btn.disabled = false;
+    btn.textContent = 'Add Artist';
+  }
 }
 function deleteArtist(id){DB.artists=DB.artists.filter(x=>x.id!==id);saveDB();renderAdminArtists();}
  
-// ---- ALBUMS (one artist per album) ----
-let albumArtDataUrl=null;
+// ---- ALBUMS ----
+let selectedAlbumArtFile = null;
 function renderAdminAlbums(){
   const el=document.getElementById('admin-panel-albums');
   el.innerHTML=`
@@ -1402,11 +1311,10 @@ function renderAdminAlbums(){
           <div class="upload-zone-label">🖼 Click to upload album art</div>
           <div class="upload-zone-sub">JPG, PNG, WEBP</div>
           <div id="alb-art-preview"></div></div>
-          <button class="btn btn-secondary btn-xs" style="margin-top:.5rem" onclick="window.open('https://imgbb.com/upload', '_blank')">Get URL</button>
         </div>
       </div>
       <div id="alb-form-msg" style="margin-top:.5rem"></div>
-      <button class="btn btn-primary btn-sm" style="margin-top:.85rem" onclick="addAlbum()">Add Album</button>
+      <button class="btn btn-primary btn-sm" id="btn-add-album" style="margin-top:.85rem" onclick="addAlbum()">Add Album</button>
     </div>
     <table><thead><tr><th>Art</th><th>Title</th><th>Artist</th><th>Year</th><th>Songs</th><th></th></tr></thead>
     <tbody>${DB.albums.map(al=>{const art=getArtist(al.artistId);return`<tr>
@@ -1416,22 +1324,45 @@ function renderAdminAlbums(){
       <td><button class="btn btn-danger btn-xs" onclick="deleteAlbum('${al.id}')">Delete</button></td>
     </tr>`;}).join('')}</tbody></table>`;
 }
-function previewAlbumArt(input){if(!input.files[0])return;fileToDataUrl(input.files[0]).then(url=>{albumArtDataUrl=url;document.getElementById('alb-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`});}
-function addAlbum(){
+function previewAlbumArt(input){
+  if(!input.files[0])return;
+  selectedAlbumArtFile = input.files[0];
+  fileToDataUrl(selectedAlbumArtFile).then(url=>{
+    document.getElementById('alb-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`;
+  });
+}
+async function addAlbum(){
   const title=document.getElementById('new-alb-title').value.trim();
   const year=document.getElementById('new-alb-year').value.trim();
   const artistId=document.getElementById('new-alb-artist').value;
   if(!title) return showMsg('alb-form-msg','Title is required.');
-  DB.albums.push({id:'al'+Date.now(),title,artistId,year,artUrl:albumArtDataUrl,emoji:'💿'});
-  albumArtDataUrl=null;
-  saveDB();
-  showMsg('alb-form-msg','Album added!','ok');
-  setTimeout(()=>renderAdminAlbums(),700);
+
+  const btn = document.getElementById('btn-add-album');
+  btn.disabled = true;
+  btn.textContent = 'Uploading...';
+
+  try {
+    let artUrl = null;
+    if (selectedAlbumArtFile) {
+      artUrl = await uploadFileToFirebase(selectedAlbumArtFile, 'albums');
+    }
+    DB.albums.push({id:'al'+Date.now(),title,artistId,year,artUrl:artUrl,emoji:'💿'});
+    selectedAlbumArtFile = null;
+    saveDB();
+    showMsg('alb-form-msg','Album added!','ok');
+    setTimeout(()=>renderAdminAlbums(),700);
+  } catch (e) {
+    showMsg('alb-form-msg', 'Error saving album.');
+    btn.disabled = false;
+    btn.textContent = 'Add Album';
+  }
 }
 function deleteAlbum(id){DB.albums=DB.albums.filter(x=>x.id!==id);saveDB();renderAdminAlbums();}
  
-// ---- SONGS (multi-artist) ----
-let songAudioUrl=null,songAudioFileName=null,songArtDataUrl2=null,songDuration=null;
+// ---- SONGS ----
+let selectedSongAudioFile = null;
+let selectedSongArtFile = null;
+
 function renderAdminSongs(){
   const el=document.getElementById('admin-panel-songs');
   el.innerHTML=`
@@ -1445,26 +1376,26 @@ function renderAdminSongs(){
           <label>Artists <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">— first selected = primary artist</span></label>
           <div id="song-artist-picker"></div>
         </div>
-        <div class="form-group full"><label>Audio URL</label>
-          <p style="font-size:.75rem;color:var(--text3);margin-bottom:.5rem">Host your audio file on GitHub releases, Bunny CDN, or any URL. Paste the direct link below.</p>
-          <input type="text" id="song-audio-url" placeholder="https://example.com/song.mp3" style="margin-bottom:.5rem">
-          <div style="display:flex;gap:.5rem">
-            <input type="text" id="song-duration-manual" placeholder="Duration (optional, e.g. 3:45)" style="flex:1;margin-bottom:.85rem">
-            <button class="btn btn-secondary btn-sm" style="align-self:flex-end;margin-bottom:.85rem" onclick="testAudioUrl()">Test URL</button>
-            <button class="btn btn-secondary btn-sm" style="align-self:flex-end;margin-bottom:.85rem" onclick="window.open('https://file.io/', '_blank')">Get URL</button>
+        
+        <div class="form-group full"><label>Audio File (.mp3, .wav)</label>
+          <div class="upload-zone" style="border-color: rgba(56,189,248,.3)">
+            <input type="file" accept="audio/*" id="song-audio-file" onchange="previewSongAudio(this)">
+            <div class="upload-zone-label" style="color:#7dd3fc">🎵 Click to choose Audio File</div>
+            <div class="upload-zone-sub">Uploads securely to your Firebase Storage</div>
+            <div id="song-audio-preview"></div>
           </div>
-          <div id="song-audio-preview"></div>
+          <input type="text" id="song-duration-manual" placeholder="Duration (optional, e.g. 3:45)" style="margin-top:.5rem">
         </div>
+
         <div class="form-group full"><label>Song Art (optional)</label>
           <div class="upload-zone"><input type="file" accept="image/*" id="song-art-file" onchange="previewSongArt(this)">
           <div class="upload-zone-label">🖼 Click to upload art</div>
           <div class="upload-zone-sub">JPG, PNG, WEBP — uses album art if blank</div>
           <div id="song-art-preview"></div></div>
-          <button class="btn btn-secondary btn-xs" style="margin-top:.5rem" onclick="window.open('https://imgbb.com/upload', '_blank')">Get URL</button>
         </div>
       </div>
       <div id="songs-form-msg" style="margin-top:.5rem"></div>
-      <button class="btn btn-primary btn-sm" style="margin-top:.85rem" onclick="addSong()">Add Song</button>
+      <button class="btn btn-primary btn-sm" id="btn-add-song" style="margin-top:.85rem" onclick="addSong()">Upload & Add Song</button>
     </div>
     <table><thead><tr><th>Art</th><th>Title</th><th>Artists</th><th>Album</th><th>Duration</th><th>Audio</th><th></th></tr></thead>
     <tbody>${DB.songs.map(s=>{
@@ -1478,42 +1409,68 @@ function renderAdminSongs(){
         <td>${s.audioUrl?`<span style="color:var(--success);font-size:.72rem">✓</span>`:`<span style="color:var(--text3);font-size:.72rem">—</span>`}</td>
         <td><button class="btn btn-danger btn-xs" onclick="deleteSong('${s.id}')">Delete</button></td>
       </tr>`;}).join('')}</tbody></table>`;
-  // Build artist picker after DOM is ready
   buildArtistPicker('song-artist-picker',[]);
 }
-function testAudioUrl(){
-  const url=document.getElementById('song-audio-url').value.trim();
-  const dur=document.getElementById('song-duration-manual').value.trim();
-  if(!url) return showMsg('songs-form-msg','Please enter an audio URL.');
-  songAudioUrl=url;
-  if(dur) songDuration=dur;
-  document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ URL set: ${url.substring(url.lastIndexOf('/')+1)}</div>`;
+function previewSongAudio(input){
+  if(!input.files[0])return;
+  selectedSongAudioFile = input.files[0];
+  document.getElementById('song-audio-preview').innerHTML=`<div class="upload-preview-audio">✓ Selected: ${selectedSongAudioFile.name}</div>`;
 }
-function previewSongArt(input){if(!input.files[0])return;fileToDataUrl(input.files[0]).then(url=>{songArtDataUrl2=url;document.getElementById('song-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`});}
-function addSong(){
+function previewSongArt(input){
+  if(!input.files[0])return;
+  selectedSongArtFile = input.files[0];
+  fileToDataUrl(selectedSongArtFile).then(url=>{
+    document.getElementById('song-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`;
+  });
+}
+
+async function addSong(){
   const title=document.getElementById('new-song-title').value.trim();
   const albumId=document.getElementById('new-song-album').value;
-  const artistIds=[...pickerSelectedIds]; // from the picker
+  const dur = document.getElementById('song-duration-manual').value.trim();
+  const artistIds=[...pickerSelectedIds];
+  
   if(!title) return showMsg('songs-form-msg','Title is required.');
-  if(!songAudioUrl) return showMsg('songs-form-msg','Please enter an audio URL and click "Test URL".');
+  if(!selectedSongAudioFile) return showMsg('songs-form-msg','Please select an audio file.');
   if(artistIds.length===0) return showMsg('songs-form-msg','Please select at least one artist.');
-  const alb=getAlbum(albumId);
-  DB.songs.push({
-    id:'s'+Date.now(),title,
-    artistIds, // array — first is primary
-    artistId:artistIds[0], // backwards compat
-    albumId,
-    audioUrl:songAudioUrl,artUrl:songArtDataUrl2,
-    albumArtUrl:alb?alb.artUrl:null,
-    duration:songDuration,emoji:'🎵'
-  });
-  songAudioUrl=null;songAudioFileName=null;songArtDataUrl2=null;songDuration=null;
-  document.getElementById('song-audio-url').value='';
-  document.getElementById('song-duration-manual').value='';
-  document.getElementById('song-audio-preview').innerHTML='';
-  saveDB();
-  showMsg('songs-form-msg','Song added!','ok');
-  setTimeout(()=>renderAdminSongs(),700);
+  
+  const btn = document.getElementById('btn-add-song');
+  btn.disabled = true;
+  btn.textContent = 'Uploading Audio (Please wait)...';
+
+  try {
+    // 1. Upload Audio
+    const audioUrl = await uploadFileToFirebase(selectedSongAudioFile, 'songs_audio');
+    
+    // 2. Upload Art (if provided)
+    let artUrl = null;
+    if (selectedSongArtFile) {
+      btn.textContent = 'Uploading Artwork...';
+      artUrl = await uploadFileToFirebase(selectedSongArtFile, 'songs_art');
+    }
+
+    const alb=getAlbum(albumId);
+    DB.songs.push({
+      id:'s'+Date.now(),title,
+      artistIds,
+      artistId:artistIds[0],
+      albumId,
+      audioUrl: audioUrl,
+      artUrl: artUrl,
+      albumArtUrl:alb?alb.artUrl:null,
+      duration:dur,emoji:'🎵'
+    });
+    
+    selectedSongAudioFile=null;
+    selectedSongArtFile=null;
+    saveDB();
+    showMsg('songs-form-msg','Song successfully uploaded and added!','ok');
+    setTimeout(()=>renderAdminSongs(),1000);
+  } catch (error) {
+    showMsg('songs-form-msg', 'Upload failed: ' + error.message);
+    btn.disabled = false;
+    btn.textContent = 'Upload & Add Song';
+  }
 }
 function deleteSong(id){DB.songs=DB.songs.filter(x=>x.id!==id);saveDB();renderAdminSongs();}
  
@@ -1592,11 +1549,6 @@ function renderAdminSettings(){
       <div id="settings-reset-msg"></div>
       <div class="form-group" style="margin-bottom:1rem"><label>Type RESET to confirm</label><input type="text" id="reset-confirm-word" placeholder="RESET" style="text-transform:uppercase"></div>
       <button class="btn btn-warn btn-sm" onclick="hardResetAdmin()">Reset to Default</button>
-    </div>
-    <div class="form-card" style="max-width:480px;margin-top:1rem;border-color:rgba(56,189,248,.2)">
-      <h3 style="color:#7dd3fc">Cloud Connection (JSONBin)</h3>
-      <p style="font-size:.82rem;color:var(--text3);margin-bottom:.75rem">Your data is stored on JSONBin.io and shared across all devices automatically.</p>
-      <button class="btn btn-secondary btn-sm" onclick="resetSetup()">Change JSONBin Config</button>
     </div>`;
 }
 function changeAdminPassword(){
@@ -1637,16 +1589,10 @@ function hardResetAdmin(){
 }
  
 // ============================================================
-// ADMIN SETTINGS — expose resetSetup
-// ============================================================
-function renderAdminSettings_extra(){}  // placeholder hook
- 
-// ============================================================
 // STARTUP
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => startup());
 </script>
- 
  
 </body>
 </html>
