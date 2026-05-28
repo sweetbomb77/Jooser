@@ -17,8 +17,16 @@
   --radius:12px;--radius-sm:8px;
   --header-h:56px;--player-h:72px;--bottom-nav-h:60px;
 }
+/* LIGHT MODE VARIABLES */
+body.light-mode {
+  --bg:#f8fafc;--bg2:#ffffff;--bg3:#f1f5f9;--bg4:#e2e8f0;
+  --accent:#9333ea;--accent2:#7e22ce;--accent3:#6b21a8;
+  --text:#0f172a;--text2:#334155;--text3:#64748b;
+  --border:rgba(147,51,234,0.15);--border2:rgba(147,51,234,0.3);
+}
+
 html,body{height:100%;overflow:hidden}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;transition:background 0.3s, color 0.3s;}
 h1,h2,h3,h4{font-family:'Syne',sans-serif}
 .hidden{display:none!important}
  
@@ -70,7 +78,13 @@ select:focus{border-color:var(--accent2)}
 .divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
 .divider::before{left:0}.divider::after{right:0}
 .alert-info{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);color:#7dd3fc;padding:.55rem .9rem;border-radius:var(--radius-sm);margin-bottom:.85rem;font-size:.82rem}
- 
+
+/* Saved Accounts */
+.saved-accounts{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;}
+.saved-account-btn{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--border);padding:.6rem .8rem;border-radius:var(--radius-sm);cursor:pointer;text-align:left;color:var(--text);}
+.saved-account-btn:hover{border-color:var(--accent2)}
+.saved-account-remove{color:var(--danger);font-size:1rem;background:none;border:none;cursor:pointer;padding:0.2rem;}
+
 /* ── APP LAYOUT ── */
 #screen-app{height:100vh;height:100dvh}
 .app-header{height:var(--header-h);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;gap:.75rem}
@@ -84,7 +98,7 @@ select:focus{border-color:var(--accent2)}
  
 /* ── SIDEBAR (desktop only) ── */
 .sidebar{width:210px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
-.sidebar-scroll{flex:1;overflow-y:auto;padding:.75rem .75rem 1rem}
+.sidebar-scroll{flex:1;overflow-y:auto;padding:.75rem .75rem 1rem;display:flex;flex-direction:column;}
 .sidebar-scroll::-webkit-scrollbar{width:4px}
 .sidebar-scroll::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
 .sidebar-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:.5rem .5rem .2rem}
@@ -96,6 +110,7 @@ select:focus{border-color:var(--accent2)}
 .pl-nav-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .pl-del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.72rem;padding:.2rem .35rem;border-radius:3px;flex-shrink:0;min-height:28px;min-width:28px}
 .pl-del-btn:active{color:var(--danger)}
+.app-version{margin-top:auto; padding-top:2rem; text-align:center; color:var(--text3); font-size:.7rem; font-weight:500;}
  
 /* ── BOTTOM NAV (mobile only) ── */
 .bottom-nav{display:none;height:var(--bottom-nav-h);background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;align-items:stretch;padding:0 .25rem;padding-bottom:env(safe-area-inset-bottom)}
@@ -104,13 +119,28 @@ select:focus{border-color:var(--accent2)}
 .bottom-nav-icon{font-size:1.35rem;line-height:1}
  
 /* ── MAIN CONTENT ── */
-.main-content{flex:1;padding:1rem 1rem 1.25rem;overflow-y:auto;background:var(--bg);min-width:0}
+.main-content{flex:1;padding:1rem 1rem 1.25rem;overflow-y:auto;background:var(--bg);min-width:0;position:relative;}
 .main-content::-webkit-scrollbar{width:4px}
 .main-content::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
- 
+
+.settings-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:1.5rem;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:1rem;}
+.settings-row:last-child{border-bottom:none;padding-bottom:0;}
+.settings-info h3{font-size:1rem;margin-bottom:0.2rem;}
+.settings-info p{font-size:0.8rem;color:var(--text3);}
+
+/* TOGGLE SWITCH */
+.switch {position: relative; display: inline-block; width: 44px; height: 24px;}
+.switch input {opacity: 0; width: 0; height: 0;}
+.slider {position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg4); transition: .2s; border-radius: 24px;}
+.slider:before {position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%;}
+input:checked + .slider {background-color: var(--success);}
+input:checked + .slider:before {transform: translateX(20px);}
+
 /* ── PLAYER BAR ── */
-.player-bar{display:flex;align-items:center;padding:0 1rem;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;gap:.75rem;height:var(--player-h)}
-.player-info{display:flex;align-items:center;gap:.6rem;min-width:0;flex:1;overflow:hidden}
+.player-bar{display:flex;align-items:center;padding:0 1rem;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;gap:.75rem;height:var(--player-h);position:relative;z-index:2100}
+.player-info{display:flex;align-items:center;gap:.6rem;min-width:0;flex:1;overflow:hidden;cursor:pointer;transition:background 0.2s;padding:.25rem;border-radius:var(--radius-sm)}
+.player-info:hover{background:rgba(255,255,255,0.05)}
 .player-cover{width:40px;height:40px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;overflow:hidden}
 .player-cover img{width:100%;height:100%;object-fit:cover}
 .player-meta{min-width:0;flex:1}
@@ -124,10 +154,33 @@ select:focus{border-color:var(--accent2)}
 .play-btn{width:38px;height:38px;background:var(--accent3);border-radius:50%;color:white;font-size:.95rem}
 .play-btn:hover,.play-btn:active{background:var(--accent2)!important;color:white!important}
 .progress-wrap{width:100%;display:flex;flex-direction:column;gap:3px}
-.progress-bar{width:100%;height:4px;background:var(--bg4);border-radius:2px;cursor:pointer}
-.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .25s linear}
+.progress-bar{width:100%;height:4px;background:var(--bg4);border-radius:2px;cursor:pointer;position:relative;}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .1s linear;pointer-events:none}
 .progress-times{display:flex;justify-content:space-between;font-size:.6rem;color:var(--text3)}
 .player-right{display:flex;align-items:center;gap:.3rem;flex-shrink:0}
+
+/* ── FULLSCREEN PLAYER ── */
+.fs-overlay{position:fixed;inset:0;background:var(--bg);z-index:2000;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);overflow-y:auto;padding-bottom:var(--player-h);}
+.fs-overlay.active{transform:translateY(0);}
+.fs-header{display:flex;justify-content:space-between;padding:1rem;position:sticky;top:0;background:var(--bg);z-index:10;}
+.fs-close-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;font-size:1.2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.fs-content{padding:1rem 2rem 3rem;max-width:800px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:2rem;}
+.fs-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.5rem;}
+.fs-cover{width:280px;height:280px;border-radius:20px;background:var(--bg3);box-shadow:0 10px 30px rgba(0,0,0,0.5);object-fit:cover;}
+.fs-title{font-size:2rem;font-weight:800;margin-bottom:0.2rem;}
+.fs-artist-link{font-size:1rem;color:var(--accent);cursor:pointer;text-decoration:none;display:inline-block;}
+.fs-artist-link:hover{text-decoration:underline;}
+.fs-controls{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem;}
+.fs-play-btn{width:64px;height:64px;font-size:1.5rem;}
+.fs-bio-section{background:var(--bg2);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--border);}
+.fs-bio-title{font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:0.5rem;}
+.fs-bio-text{font-size:.95rem;line-height:1.5;color:var(--text);}
+.fs-credits{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.fs-credit-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(192,132,252,0.1);}
+.fs-credit-role{color:var(--text3);font-size:.85rem;}
+.fs-credit-name{color:var(--text);font-size:.85rem;}
+.fs-credit-link{color:var(--accent);cursor:pointer;}
+.fs-credit-link:hover{text-decoration:underline;}
  
 /* ── CONTENT STYLES ── */
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
@@ -141,27 +194,27 @@ select:focus{border-color:var(--accent2)}
 .card:hover .play-overlay{display:flex}
 .card-name{font-size:.83rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-meta{font-size:.7rem;color:var(--text3);margin-top:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* EXPLICIT BADGE */
+.explicit-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--text2);color:var(--bg);font-size:.6rem;font-weight:bold;border-radius:3px;width:14px;height:14px;margin-right:4px;vertical-align:middle;}
  
 /* Song rows */
 .song-row{display:flex;align-items:center;gap:.6rem;padding:.65rem .5rem;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
-.song-row:active,.song-row.playing{background:rgba(124,58,237,.15)}
+.song-row:active,.song-row.playing{background:var(--border)}
 .song-num{width:20px;text-align:center;font-size:.76rem;color:var(--text3);flex-shrink:0}
 .song-thumb{width:42px;height:42px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;overflow:hidden}
 .song-thumb img{width:100%;height:100%;object-fit:cover}
 .song-info{flex:1;min-width:0}
-.song-title{font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-title{font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;}
 .song-artist{font-size:.73rem;color:var(--text3)}
 .song-actions{display:flex;gap:.25rem;flex-shrink:0}
-.song-dur{font-size:.73rem;color:var(--text3);flex-shrink:0}
+.song-dur{font-size:.73rem;color:var(--text3);flex-shrink:0;text-align:right}
 .playing-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .back-btn{background:none;border:none;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:.35rem;font-size:.82rem;padding:.4rem 0;margin-bottom:1rem;font-family:'DM Sans',sans-serif;min-height:36px}
 .back-btn:active{color:var(--text)}
 .empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text3)}
 .empty-icon{font-size:2.5rem;margin-bottom:.75rem}
- 
-/* ARTIST CHIPS */
-.artist-chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}
 .artist-chip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:.2rem .6rem;font-size:.73rem;color:var(--accent);cursor:pointer}
  
 /* ── ADMIN ── */
@@ -176,12 +229,12 @@ select:focus{border-color:var(--accent2)}
 .admin-panel{display:none}.admin-panel.active{display:block}
 table{width:100%;border-collapse:collapse}
 th{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:.45rem .6rem;text-align:left;border-bottom:1px solid var(--border)}
-td{padding:.55rem .6rem;font-size:.82rem;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
-tr:active td{background:rgba(255,255,255,.02)}
+td{padding:.55rem .6rem;font-size:.82rem;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:active td{background:var(--bg3)}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 .form-group{display:flex;flex-direction:column;gap:.35rem}
 .form-group.full{grid-column:1/-1}
-.form-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-bottom:1.1rem}
+.form-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-bottom:1.1rem; position:relative;}
 .form-card h3{margin-bottom:.8rem;font-size:.95rem}
 .tag{display:inline-block;padding:.18rem .55rem;border-radius:20px;font-size:.7rem;font-weight:500}
 .tag-active{background:rgba(74,222,128,.1);color:var(--success)}
@@ -192,22 +245,24 @@ tr:active td{background:rgba(255,255,255,.02)}
 .stat-label{font-size:.7rem;color:var(--text3);margin-top:.1rem}
 .code-box{font-family:monospace;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.28rem .6rem;font-size:.8rem;color:var(--accent);letter-spacing:.05em}
 .upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:1.1rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.upload-zone:active{border-color:var(--accent);background:rgba(124,58,237,.05)}
+.upload-zone:active{border-color:var(--accent);background:var(--border)}
 .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2}
 .upload-zone-label{font-size:.83rem;color:var(--text3)}
 .upload-zone-sub{font-size:.72rem;color:var(--text3);margin-top:.2rem}
 .upload-preview{width:70px;height:70px;border-radius:7px;object-fit:cover;border:1px solid var(--border);display:block;margin:.45rem auto 0}
 .upload-preview-audio{font-size:.75rem;color:var(--success);margin-top:.35rem}
  
-/* Multi-artist picker */
-.artist-picker{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem;display:flex;flex-direction:column;gap:.3rem;max-height:160px;overflow-y:auto}
-.artist-picker-item{display:flex;align-items:center;gap:.5rem;padding:.4rem;border-radius:5px;cursor:pointer;font-size:.85rem;color:var(--text2);min-height:40px}
-.artist-picker-item:active{background:rgba(255,255,255,.05)}
-.artist-picker-item.selected{background:rgba(124,58,237,.2);color:var(--accent)}
-.artist-picker-item input[type=checkbox]{accent-color:var(--accent3);width:16px;height:16px;flex-shrink:0}
+/* Pickers (Artists & Profiles) */
+.artist-picker, .prof-picker {background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem;display:flex;flex-direction:column;gap:.3rem;max-height:160px;overflow-y:auto}
+.artist-picker-item, .prof-picker-item {display:flex;align-items:center;gap:.5rem;padding:.4rem;border-radius:5px;cursor:pointer;font-size:.85rem;color:var(--text2);min-height:40px}
+.artist-picker-item:active, .prof-picker-item:active {background:rgba(255,255,255,.05)}
+.artist-picker-item.selected, .prof-picker-item.selected {background:var(--border);color:var(--accent)}
+.artist-picker-item input[type=checkbox], .prof-picker-item input[type=checkbox] {accent-color:var(--accent3);width:16px;height:16px;flex-shrink:0}
 .selected-artists-preview{display:flex;flex-wrap:wrap;gap:.35rem;min-height:22px;margin-top:.35rem}
-.sel-chip{background:rgba(124,58,237,.2);border:1px solid var(--border2);border-radius:20px;padding:.2rem .6rem;font-size:.73rem;color:var(--accent);display:flex;align-items:center;gap:.3rem}
+.sel-chip{background:var(--border);border:1px solid var(--border2);border-radius:20px;padding:.2rem .6rem;font-size:.73rem;color:var(--accent);display:flex;align-items:center;gap:.3rem}
 .sel-chip-x{cursor:pointer;opacity:.7;font-size:.68rem;min-width:20px;min-height:20px;display:flex;align-items:center;justify-content:center}
+.credit-row{display:flex;gap:.5rem;margin-bottom:.5rem;align-items:center;}
+.credit-row input, .credit-row select{margin-bottom:0;}
  
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:flex-end;justify-content:center;z-index:999;padding:0}
@@ -246,6 +301,9 @@ tr:active td{background:rgba(255,255,255,.02)}
   td,th{padding:.4rem .5rem}
   .modal{border-radius:20px 20px 0 0}
   .toast{bottom:calc(var(--bottom-nav-h) + var(--player-h) + .75rem)}
+  .fs-cover{width:220px;height:220px;}
+  .fs-title{font-size:1.5rem;}
+  .fs-content{padding:1rem 1rem 3rem;}
 }
 @media(min-width:641px){
   .bottom-nav{display:none!important}
@@ -267,20 +325,24 @@ tr:active td{background:rgba(255,255,255,.02)}
   </div>
   <div class="auth-card">
     <div id="auth-msg"></div>
+
+    <div id="auth-saved-accounts" class="saved-accounts hidden">
+      <label>Saved Accounts</label>
+      <div id="saved-accounts-list"></div>
+      <div class="divider">or</div>
+    </div>
+
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
       <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
       <button class="auth-tab" onclick="switchTab('guest')">Guest</button>
     </div>
     <div id="tab-login" class="auth-panel active">
-      <label>Username</label><input type="text" id="login-user" placeholder="your username">
+      <label>Username (or 'admin')</label><input type="text" id="login-user" placeholder="your username">
       <label>Password</label><input type="password" id="login-pass" placeholder="••••••••">
       <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
       <div class="divider">or</div>
       <button class="btn btn-secondary btn-full" onclick="switchTab('guest')">Continue as Guest</button>
-      <div style="text-align:center;margin-top:.85rem;display:flex;justify-content:center;gap:1rem">
-        <button onclick="showAdminLogin()" style="background:none;border:none;color:var(--text3);font-size:.73rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif">Admin Portal</button>
-      </div>
     </div>
     <div id="tab-signup" class="auth-panel">
       <label>Username</label><input type="text" id="signup-user" placeholder="choose a username">
@@ -295,20 +357,6 @@ tr:active td{background:rgba(255,255,255,.02)}
       <button class="btn btn-primary btn-full" onclick="doGuest()">Browse as Guest</button>
     </div>
   </div>
- 
-  <div id="admin-login-overlay" class="modal-overlay hidden">
-    <div class="modal">
-      <div class="modal-handle"></div>
-      <h3>Admin Portal</h3>
-      <div id="admin-login-msg"></div>
-      <label>Username</label><input type="text" id="admin-user-input" placeholder="admin">
-      <label>Password</label><input type="password" id="admin-pass-input" placeholder="••••••••">
-      <div style="display:flex;gap:.65rem;margin-top:.5rem">
-        <button class="btn btn-primary" style="flex:1" onclick="doAdminLogin()">Login</button>
-        <button class="btn btn-secondary" style="flex:1" onclick="hideAdminLogin()">Cancel</button>
-      </div>
-    </div>
-  </div>
 </div>
  
 <div id="screen-app" class="screen">
@@ -320,7 +368,6 @@ tr:active td{background:rgba(255,255,255,.02)}
     </div>
     <div class="header-user">
       <span id="header-username"></span>
-      <button class="btn btn-secondary btn-sm" onclick="logout()" title="Sign Out">⎋ <span class="signout-label">Sign Out</span></button>
     </div>
   </div>
   <div class="app-body">
@@ -335,10 +382,55 @@ tr:active td{background:rgba(255,255,255,.02)}
         <button class="nav-item" data-page="recent" onclick="navTo('recent',this)"><span class="nav-icon">🕐</span> Recently Played</button>
         <div id="playlist-nav"></div>
         <button class="nav-item" style="color:var(--accent);margin-top:.2rem" onclick="showCreatePlaylist()"><span class="nav-icon">＋</span> New Playlist</button>
+        
+        <div class="sidebar-label" style="margin-top:auto; padding-top:1.5rem">System</div>
+        <button class="nav-item" data-page="settings" onclick="navTo('settings',this)"><span class="nav-icon">⚙️</span> Settings</button>
+        <div class="app-version">Jooser v1.2.1</div>
       </div>
     </div>
     <div class="main-content" id="main-content"></div>
+    
+    <div id="fullscreen-player" class="fs-overlay">
+      <div class="fs-header">
+        <button class="fs-close-btn" onclick="closeFullscreenPlayer()">↓</button>
+        <button class="btn btn-secondary btn-sm" onclick="showAddToPlaylist()">+ Playlist</button>
+      </div>
+      <div class="fs-content">
+        <div class="fs-hero">
+          <img id="fs-cover" class="fs-cover" src="">
+          <div>
+            <div id="fs-title" class="fs-title">Song Title</div>
+            <div id="fs-artist" class="fs-artist-link">Artist Name</div>
+          </div>
+        </div>
+        
+        <div style="max-width:400px; margin:0 auto; width:100%;">
+          <div class="progress-wrap" style="margin-bottom:1rem">
+            <div class="progress-bar" id="fs-progress-bar" onclick="seekTrack(event, this)">
+              <div class="progress-fill" id="fs-progress-fill" style="width:0%"></div>
+            </div>
+            <div class="progress-times"><span id="fs-time-cur">0:00</span><span id="fs-time-dur">0:00</span></div>
+          </div>
+          
+          <div class="fs-controls">
+            <button class="ctrl-btn" id="fs-shuffle-btn" onclick="toggleShuffle()" title="Shuffle">⇄</button>
+            <button class="ctrl-btn" onclick="prevSong()" style="font-size:1.5rem">⏮</button>
+            <button class="ctrl-btn play-btn fs-play-btn" id="fs-play-btn" onclick="togglePlay()">▶</button>
+            <button class="ctrl-btn" onclick="nextSong()" style="font-size:1.5rem">⏭</button>
+            <button class="ctrl-btn" id="fs-repeat-btn" onclick="toggleRepeat()" title="Repeat">↻</button>
+          </div>
+        </div>
+
+        <div id="fs-bio-container" class="fs-bio-section hidden">
+          <div class="fs-bio-title">About This Song</div>
+          <div id="fs-bio-text" class="fs-bio-text"></div>
+          <div id="fs-credits-container" class="fs-credits hidden"></div>
+        </div>
+      </div>
+    </div>
+    
   </div>
+  
   <nav class="bottom-nav" id="bottom-nav">
     <button class="bottom-nav-item active" data-page="home" onclick="mobileNav('home',this)">
       <span class="bottom-nav-icon">🏠</span><span>Home</span>
@@ -356,8 +448,9 @@ tr:active td{background:rgba(255,255,255,.02)}
       <span class="bottom-nav-icon">📚</span><span>Library</span>
     </button>
   </nav>
+  
   <div class="player-bar">
-    <div class="player-info">
+    <div class="player-info" onclick="openFullscreenPlayer()">
       <div class="player-cover" id="player-cover">♪</div>
       <div class="player-meta">
         <div class="player-title" id="player-title">No song playing</div>
@@ -373,7 +466,7 @@ tr:active td{background:rgba(255,255,255,.02)}
         <button class="ctrl-btn" id="repeat-btn" onclick="toggleRepeat()" title="Repeat">↻</button>
       </div>
       <div class="progress-wrap">
-        <div class="progress-bar" id="progress-bar" onclick="seekTrack(event)">
+        <div class="progress-bar" id="progress-bar" onclick="seekTrack(event, this)">
           <div class="progress-fill" id="progress-fill" style="width:0%"></div>
         </div>
         <div class="progress-times"><span id="time-cur">0:00</span><span id="time-dur">0:00</span></div>
@@ -399,10 +492,11 @@ tr:active td{background:rgba(255,255,255,.02)}
       <div class="sidebar-label">Manage</div>
       <button class="nav-item active" onclick="adminNav('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</button>
       <button class="nav-item" onclick="adminNav('songs',this)"><span class="nav-icon">🎵</span> Songs</button>
-      <button class="nav-item" onclick="adminNav('albums',this)"><span class="nav-icon">💿</span> Albums</button>
+      <button class="nav-item" onclick="adminNav('albums',this)"><span class="nav-icon">💿</span> Albums / EPs</button>
       <button class="nav-item" onclick="adminNav('artists',this)"><span class="nav-icon">🎤</span> Artists</button>
-      <button class="nav-item" onclick="adminNav('codes',this)"><span class="nav-icon">🔑</span> Access Codes</button>
+      <button class="nav-item" onclick="adminNav('profiles',this)"><span class="nav-icon">🛡️</span> Profiles</button>
       <button class="nav-item" onclick="adminNav('users',this)"><span class="nav-icon">👥</span> Users</button>
+      <button class="nav-item" onclick="adminNav('codes',this)"><span class="nav-icon">🔑</span> Access Codes</button>
       <button class="nav-item" onclick="adminNav('settings',this)"><span class="nav-icon">⚙️</span> Settings</button>
     </div>
     <div class="admin-content">
@@ -410,8 +504,9 @@ tr:active td{background:rgba(255,255,255,.02)}
       <div id="admin-panel-songs" class="admin-panel"></div>
       <div id="admin-panel-albums" class="admin-panel"></div>
       <div id="admin-panel-artists" class="admin-panel"></div>
-      <div id="admin-panel-codes" class="admin-panel"></div>
+      <div id="admin-panel-profiles" class="admin-panel"></div>
       <div id="admin-panel-users" class="admin-panel"></div>
+      <div id="admin-panel-codes" class="admin-panel"></div>
       <div id="admin-panel-settings" class="admin-panel"></div>
     </div>
   </div>
@@ -449,15 +544,12 @@ tr:active td{background:rgba(255,255,255,.02)}
 <audio id="audio-player"></audio>
 <div id="toast" class="hidden toast"></div>
 
-
 <script type="module">
-  // 1. Import Firebase tools directly from Google's CDN
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
 
-  // 2. Your specific app configuration
   const firebaseConfig = {
     apiKey: "AIzaSyAzZFWx0u24TJ0tPGimPCGiJJUY6TB_uq4",
     authDomain: "jooser-app.firebaseapp.com",
@@ -467,13 +559,11 @@ tr:active td{background:rgba(255,255,255,.02)}
     appId: "1:72994376813:web:76043f3c6e9f26105f0364"
   };
 
-  // 3. Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  // 4. Attach Firebase to the global window so your functions can talk to it
   window.fb = {
     auth, signIn: signInWithEmailAndPassword, signUp: createUserWithEmailAndPassword, signOut,
     db, doc, setDoc, getDoc, onSnapshot,
@@ -487,6 +577,7 @@ tr:active td{background:rgba(255,255,255,.02)}
 // ============================================================
 let DB = {
   admin: { username: 'admin', password: 'admin123' },
+  profiles: [{id:'default', name:'Default', hideDefault: false}],
   users: [],
   accessCodes: [
     { code: 'WAVE2024', used: false, usedBy: null },
@@ -496,51 +587,164 @@ let DB = {
 };
 
 let isSyncing = false;
+let suppressRemoteSync = false; 
 
-async function saveDB() {
+// LOCAL SETTINGS (Theme, Explicit Filter, Saved Accounts)
+let appSettings = JSON.parse(localStorage.getItem('jooser_settings')) || { theme: 'dark', blockExplicit: false, dataSaver: false };
+let savedAccounts = JSON.parse(localStorage.getItem('jooser_accounts')) || [];
+
+function applyTheme() {
+  if (appSettings.theme === 'light') document.body.classList.add('light-mode');
+  else document.body.classList.remove('light-mode');
+}
+applyTheme();
+
+function saveLocalSettings() {
+  localStorage.setItem('jooser_settings', JSON.stringify(appSettings));
+  applyTheme();
+}
+
+function saveLocalAccounts() {
+  localStorage.setItem('jooser_accounts', JSON.stringify(savedAccounts));
+  renderSavedAccounts();
+}
+
+async function saveDB(isLocalAction = true) {
   if (isSyncing || !window.fb) return;
   isSyncing = true;
-  try {
-    await window.fb.setDoc(window.fb.doc(window.fb.db, "app_data", "main"), DB);
-    console.log('Firebase save success');
-  } catch(e) {
-    console.error('Firebase save failed:', e);
-    showToast('Save failed: ' + e.message, 'warn');
-  } finally {
+  if(isLocalAction) suppressRemoteSync = true; 
+
+  try { await window.fb.setDoc(window.fb.doc(window.fb.db, "app_data", "main"), DB); } 
+  catch(e) { console.error('Firebase save failed:', e); showToast('Save failed: ' + e.message, 'warn'); } 
+  finally {
     isSyncing = false;
+    if(isLocalAction) setTimeout(() => { suppressRemoteSync = false; }, 1000);
   }
 }
 
 function startLiveSync() {
   window.fb.onSnapshot(window.fb.doc(window.fb.db, "app_data", "main"), (docSnap) => {
+    if (suppressRemoteSync) return; 
+
     if (docSnap.exists()) {
       const remoteData = docSnap.data();
+      
+      // Auto-migrate legacy data from profileId (string) to profileIds (array)
+      remoteData.songs.forEach(s => { 
+        s.streams=s.streams||0; s.credits=s.credits||[]; s.bio=s.bio||''; s.isExplicit=s.isExplicit||false;
+        if(s.profileId && !s.profileIds) s.profileIds = [s.profileId];
+        else if(!s.profileIds) s.profileIds = ['default'];
+      });
+      remoteData.albums.forEach(a => { 
+        a.type=a.type||'Album'; a.bio=a.bio||''; a.isExplicit=a.isExplicit||false; 
+        if(a.profileId && !a.profileIds) a.profileIds = [a.profileId];
+        else if(!a.profileIds) a.profileIds = ['default'];
+      });
+      remoteData.artists.forEach(a => { 
+        a.isExplicit=a.isExplicit||false; 
+        if(a.profileId && !a.profileIds) a.profileIds = [a.profileId];
+        else if(!a.profileIds) a.profileIds = ['default'];
+      });
+      
+      remoteData.users.forEach(u => { u.profileId = u.profileId||'default'; });
+      remoteData.profiles = remoteData.profiles || [{id:'default', name:'Default', hideDefault: false}];
+      
       Object.assign(DB, remoteData);
       refreshCurrentView();
     } else {
-      saveDB();
+      saveDB(false); 
     }
   });
 }
 
 function startup() {
-  if (!window.fb) {
-    setTimeout(startup, 100); 
-    return;
-  }
+  if (!window.fb) { setTimeout(startup, 100); return; }
   startLiveSync();
+  renderSavedAccounts();
+  checkPersistedLogin(); 
   showToast('Connected to Firebase', 'ok');
+}
+
+function checkPersistedLogin() {
+  window.fb.auth.onAuthStateChanged((user) => {
+    if (user && !currentUser) {
+      const dbUser = DB.users.find(u => u.id === user.uid);
+      if(dbUser) {
+        currentUser = dbUser.username; currentUserType = 'user'; currentUserId = user.uid;
+        enterApp();
+      }
+    }
+  });
 }
  
 // ============================================================
-// GLOBAL STATE & AUTH
+// GLOBAL STATE & CONTENT ROUTER
 // ============================================================
 let currentUser=null, currentUserType=null, currentUserId=null;
 let currentSongId=null;
 let currentQueue=[], currentQueueIdx=-1, originalQueue=[];
 let isPlaying=false, isShuffle=false, isRepeat=false;
 const audio=document.getElementById('audio-player');
+
+// THE CONTENT ROUTER
+function canView(item) {
+  if (currentUserType === 'admin') return true; // Admins see everything
+  
+  if (item.isExplicit && appSettings.blockExplicit) return false;
+
+  let userProfileId = 'default';
+  if (currentUserType === 'user') {
+    const u = DB.users.find(x => x.id === currentUserId);
+    if (u && u.profileId) userProfileId = u.profileId;
+  }
+  
+  const userProfileObj = DB.profiles.find(x => x.id === userProfileId) || {hideDefault: false};
+  const itemProfileIds = item.profileIds || ['default'];
+
+  // Rule 1: User's profile is explicitly tagged on this item -> SHOW
+  if (itemProfileIds.includes(userProfileId)) return true;
+
+  // Rule 2: Item is tagged 'default', and user's profile does NOT hide defaults -> SHOW
+  if (itemProfileIds.includes('default') && !userProfileObj.hideDefault) return true;
+
+  // Otherwise -> HIDE
+  return false;
+}
  
+// ============================================================
+// AUTH & ACCOUNT SWITCHING
+// ============================================================
+function renderSavedAccounts() {
+  const container = document.getElementById('auth-saved-accounts');
+  const list = document.getElementById('saved-accounts-list');
+  if (savedAccounts.length === 0) {
+    container.classList.add('hidden');
+    return;
+  }
+  container.classList.remove('hidden');
+  list.innerHTML = savedAccounts.map((acc, i) => `
+    <div class="saved-account-btn">
+      <div style="flex:1" onclick="quickLogin(${i})">
+        <span style="font-size:1.2rem;margin-right:.5rem">👤</span> 
+        <strong>${acc.username}</strong>
+      </div>
+      <button class="saved-account-remove" onclick="removeSavedAccount(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function removeSavedAccount(index) {
+  savedAccounts.splice(index, 1);
+  saveLocalAccounts();
+}
+
+async function quickLogin(index) {
+  const acc = savedAccounts[index];
+  document.getElementById('login-user').value = acc.username;
+  document.getElementById('login-pass').value = acc.password;
+  doLogin();
+}
+
 function switchTab(tab){
   ['login','signup','guest'].forEach((t,i)=>{
     document.querySelectorAll('.auth-tab')[i].classList.toggle('active',t===tab);
@@ -571,10 +775,14 @@ async function doSignup(){
     const fakeEmail = `${u.toLowerCase()}@jooser.app`;
     const userCred = await window.fb.signUp(window.fb.auth, fakeEmail, p);
     
-    code.used = true; 
-    code.usedBy = u;
-    DB.users.push({ id: userCred.user.uid, username: u, codeUsed: true, type: 'user' });
-    saveDB();
+    code.used = true; code.usedBy = u;
+    DB.users.push({ id: userCred.user.uid, username: u, codeUsed: true, type: 'user', profileId: 'default' });
+    saveDB(false);
+
+    if(!savedAccounts.find(x => x.username.toLowerCase() === u.toLowerCase())) {
+      savedAccounts.push({username: u, password: p, type: 'user'});
+      saveLocalAccounts();
+    }
 
     currentUser = u; currentUserType = 'user'; currentUserId = userCred.user.uid;
     enterApp();
@@ -588,16 +796,31 @@ async function doSignup(){
 async function doLogin(){
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value;
-  
   if(!u || !p) return showMsg('auth-msg', 'Please fill in all fields.');
+
+  if(u.toLowerCase() === DB.admin.username.toLowerCase() && p === DB.admin.password) {
+    if(!savedAccounts.find(x => x.username.toLowerCase() === u.toLowerCase())) {
+      savedAccounts.push({username: u, password: p, type: 'admin'});
+      saveLocalAccounts();
+    }
+    currentUserType = 'admin';
+    showScreen('admin');
+    adminNav('dashboard', document.querySelector('#screen-admin .nav-item'));
+    return;
+  }
+
   try {
     const fakeEmail = `${u.toLowerCase()}@jooser.app`;
     const userCred = await window.fb.signIn(window.fb.auth, fakeEmail, p);
+    
+    if(!savedAccounts.find(x => x.username.toLowerCase() === u.toLowerCase())) {
+      savedAccounts.push({username: u, password: p, type: 'user'});
+      saveLocalAccounts();
+    }
+
     currentUser = u; currentUserType = 'user'; currentUserId = userCred.user.uid;
     enterApp();
-  } catch (error) {
-    showMsg('auth-msg', 'Incorrect username or password.');
-  }
+  } catch (error) { showMsg('auth-msg', 'Incorrect username or password.'); }
 }
 
 function doGuest(){
@@ -627,17 +850,6 @@ async function logout(){
   } catch (error) { console.error(error); }
 }
 
-function showAdminLogin(){document.getElementById('admin-login-overlay').classList.remove('hidden');}
-function hideAdminLogin(){document.getElementById('admin-login-overlay').classList.add('hidden');clearMsg('admin-login-msg');}
-function doAdminLogin(){
-  const u=document.getElementById('admin-user-input').value.trim();
-  const p=document.getElementById('admin-pass-input').value;
-  if(u===DB.admin.username&&p===DB.admin.password){
-    hideAdminLogin(); currentUserType='admin';
-    showScreen('admin');
-    adminNav('dashboard',document.querySelector('#screen-admin .nav-item'));
-  } else showMsg('admin-login-msg','Invalid admin credentials.');
-}
 function adminLogout(){currentUserType=null;showScreen('auth');}
 function showScreen(s){
   document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
@@ -651,16 +863,17 @@ function showScreen(s){
 function navTo(page,btn){
   document.querySelectorAll('#app-sidebar .nav-item').forEach(n=>n.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  document.querySelectorAll('.bottom-nav-item').forEach(b=>{
-    b.classList.toggle('active', b.dataset.page===page);
-  });
+  document.querySelectorAll('.bottom-nav-item').forEach(b=>{ b.classList.toggle('active', b.dataset.page===page); });
   const c=document.getElementById('main-content');
+  
   if(page==='home') renderHome(c);
   else if(page==='artists') renderArtistsPage(c);
   else if(page==='albums') renderAlbumsPage(c);
   else if(page==='songs') renderAllSongs(c);
   else if(page==='recent') renderRecent(c);
+  else if(page==='settings') renderSettings(c);
   else if(page.startsWith('playlist:')) renderPlaylistPage(c,page.split(':')[1]);
+  closeFullscreenPlayer();
 }
  
 function mobileNav(page, btn){
@@ -676,7 +889,7 @@ function mobileNav(page, btn){
  
 function renderLibraryPage(c){
   const pls = getUserPlaylists();
-  const recent = DB.recentlyPlayed.map(id=>getSong(id)).filter(Boolean).slice(0,5);
+  const recent = DB.recentlyPlayed.map(id=>getSong(id)).filter(Boolean).filter(canView).slice(0,5);
   c.innerHTML = `
     <div class="section-header"><h1 class="section-title">Library</h1></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
@@ -700,6 +913,9 @@ function renderLibraryPage(c){
     ${recent.length>0 ? `
       <div class="section-header"><h2 style="font-size:1rem">Recently Played</h2></div>
       <div>${recent.map((s,i)=>songRowHtml(s,i,recent.map(x=>x.id))).join('')}</div>` : ''}
+    
+    <div class="section-header" style="margin-top:2rem"><h2 style="font-size:1rem">System</h2></div>
+    <button class="btn btn-secondary btn-full" onclick="navTo('settings',null)">⚙️ Settings</button>
   `;
 }
  
@@ -713,9 +929,66 @@ function refreshCurrentView(){
   else if(page==='albums') renderAlbumsPage(c);
   else if(page==='songs') renderAllSongs(c);
   else if(page==='recent') renderRecent(c);
+  else if(page==='settings') renderSettings(c);
   renderPlaylistNav();
 }
  
+// ============================================================
+// APP SETTINGS SCREEN
+// ============================================================
+function renderSettings(c) {
+  c.innerHTML = `
+    <div class="section-header"><h1 class="section-title">Settings</h1></div>
+    
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-info">
+          <h3>Account Switcher</h3>
+          <p>Quickly switch between saved accounts on this device.</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="logout()">Switch Account</button>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-info">
+          <h3>Block Explicit Content</h3>
+          <p>Hide songs, albums, and artists marked as Explicit.</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="set-explicit" ${appSettings.blockExplicit ? 'checked' : ''} onchange="toggleExplicit(this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-info">
+          <h3>Light Mode</h3>
+          <p>Switch between dark and light themes.</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="set-theme" ${appSettings.theme === 'light' ? 'checked' : ''} onchange="toggleTheme(this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-row" style="justify-content:center; border:none; padding-top:1rem; color:var(--text3); font-size:.8rem;">
+        Jooser v1.2.1
+      </div>
+    </div>
+  `;
+}
+
+function toggleExplicit(val) {
+  appSettings.blockExplicit = val;
+  saveLocalSettings();
+  showToast('Explicit content ' + (val ? 'blocked' : 'allowed'), 'ok');
+  refreshCurrentView(); // Instantly update view when flipped
+}
+function toggleTheme(val) {
+  appSettings.theme = val ? 'light' : 'dark';
+  saveLocalSettings();
+}
+
 // ============================================================
 // HELPERS
 // ============================================================
@@ -726,7 +999,6 @@ function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(
 function timeOfDay(){const h=new Date().getHours();return h<12?'morning':h<18?'afternoon':'evening';}
 function fileToDataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});}
  
-// === FIREBASE DIRECT UPLOAD HELPER ===
 async function uploadFileToFirebase(file, folderName) {
   if (!file || !window.fb) return null;
   try {
@@ -734,10 +1006,7 @@ async function uploadFileToFirebase(file, folderName) {
     const storageRef = window.fb.ref(window.fb.storage, `${folderName}/${uniqueName}`);
     await window.fb.uploadBytes(storageRef, file);
     return await window.fb.getDownloadURL(storageRef);
-  } catch (error) {
-    console.error("Upload failed:", error);
-    throw error;
-  }
+  } catch (error) { throw error; }
 }
 
 function songArtistNames(song){
@@ -750,71 +1019,84 @@ function songRowHtml(song,idx,queueList){
   const playing=currentSongId===song.id&&isPlaying;
   const thumb=song.artUrl||(al?al.artUrl:null);
   const qStr=JSON.stringify(queueList).replace(/"/g,'&quot;');
+  const streamStr = (song.streams && song.streams > 0) ? `<span style="opacity:0.6;margin-right:.5rem;font-size:.65rem">▶ ${song.streams}</span>` : '';
+  const explicitBadge = song.isExplicit ? `<span class="explicit-badge" title="Explicit">E</span>` : '';
+  
   return `<div class="song-row ${playing?'playing':''}" onclick="playFromQueue('${qStr}',${idx})">
     <div class="song-num">${playing?'<span class="playing-dot"></span>':(idx+1)}</div>
     <div class="song-thumb">${thumb?`<img src="${thumb}">`:'🎵'}</div>
-    <div class="song-info"><div class="song-title">${song.title}</div><div class="song-artist">${songArtistNames(song)}</div></div>
+    <div class="song-info"><div class="song-title">${explicitBadge}${song.title}</div><div class="song-artist">${songArtistNames(song)}</div></div>
     <div class="song-actions"><button class="btn btn-secondary btn-xs" onclick="event.stopPropagation();quickAddToPlaylist('${song.id}')">+ Playlist</button></div>
-    <div class="song-dur">${song.duration||'—'}</div>
+    <div class="song-dur">${streamStr}${song.duration||'—'}</div>
   </div>`;
 }
  
+// ============================================================
+// RENDER (Filtered by canView)
+// ============================================================
 function renderHome(c){
+  const filteredArtists = DB.artists.filter(canView);
+  const filteredAlbums = DB.albums.filter(canView);
+  const filteredSongs = DB.songs.filter(canView);
+
   c.innerHTML=`
     <div style="margin-bottom:1.5rem">
       <h1 style="font-size:1.8rem;margin-bottom:.2rem">Good ${timeOfDay()}, ${currentUser}</h1>
       <p style="color:var(--text3);font-size:.85rem">What are you listening to today?</p>
     </div>
-    ${DB.artists.length===0&&DB.songs.length===0?`<div class="empty-state"><div class="empty-icon">🎵</div><div>No music yet — an admin needs to add some!</div></div>`:''}
-    ${DB.artists.length>0?`
+    ${filteredArtists.length===0&&filteredSongs.length===0?`<div class="empty-state"><div class="empty-icon">🎵</div><div>No music available for your profile.</div></div>`:''}
+    ${filteredArtists.length>0?`
       <div class="section-header"><h2 style="font-size:1.1rem">Artists</h2><button class="btn-ghost btn-sm" onclick="navTo('artists',null)">See all →</button></div>
-      <div class="grid-cards" style="margin-bottom:1.5rem">${DB.artists.slice(0,6).map(a=>`
+      <div class="grid-cards" style="margin-bottom:1.5rem">${filteredArtists.slice(0,6).map(a=>`
         <div class="card" onclick="openArtist('${a.id}')">
           <div class="card-art" style="border-radius:50%">${a.artUrl?`<img src="${a.artUrl}" style="border-radius:50%">`:'🎤'}<div class="play-overlay" style="border-radius:50%">▶</div></div>
-          <div class="card-name" style="text-align:center">${a.name}</div><div class="card-meta" style="text-align:center">${a.genre||''}</div>
+          <div class="card-name" style="text-align:center">${a.isExplicit?`<span class="explicit-badge">E</span>`:''}${a.name}</div><div class="card-meta" style="text-align:center">${a.genre||''}</div>
         </div>`).join('')}</div>`:''}
-    ${DB.albums.length>0?`
-      <div class="section-header"><h2 style="font-size:1.1rem">Albums</h2><button class="btn-ghost btn-sm" onclick="navTo('albums',null)">See all →</button></div>
-      <div class="grid-cards" style="margin-bottom:1.5rem">${DB.albums.slice(0,6).map(al=>{const art=getArtist(al.artistId);return`
+    ${filteredAlbums.length>0?`
+      <div class="section-header"><h2 style="font-size:1.1rem">Albums & EPs</h2><button class="btn-ghost btn-sm" onclick="navTo('albums',null)">See all →</button></div>
+      <div class="grid-cards" style="margin-bottom:1.5rem">${filteredAlbums.slice(0,6).map(al=>{const art=getArtist(al.artistId);return`
         <div class="card" onclick="openAlbum('${al.id}')">
           <div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}<div class="play-overlay">▶</div></div>
-          <div class="card-name">${al.title}</div><div class="card-meta">${art?art.name:''} · ${al.year||''}</div>
+          <div class="card-name">${al.isExplicit?`<span class="explicit-badge">E</span>`:''}${al.title}</div><div class="card-meta">${al.type||'Album'} · ${art?art.name:''}</div>
         </div>`;}).join('')}</div>`:''}
-    ${DB.songs.length>0?`
+    ${filteredSongs.length>0?`
       <div class="section-header"><h2 style="font-size:1.1rem">Songs</h2></div>
-      <div>${DB.songs.slice(0,10).map((s,i)=>songRowHtml(s,i,DB.songs.map(x=>x.id))).join('')}</div>`:''}`;
+      <div>${filteredSongs.slice(0,10).map((s,i)=>songRowHtml(s,i,filteredSongs.map(x=>x.id))).join('')}</div>`:''}`;
 }
  
 function renderArtistsPage(c){
-  if(!DB.artists.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Artists</h1></div><div class="empty-state"><div class="empty-icon">🎤</div><div>No artists yet.</div></div>`;return;}
+  const filteredArtists = DB.artists.filter(canView);
+  if(!filteredArtists.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Artists</h1></div><div class="empty-state"><div class="empty-icon">🎤</div><div>No artists yet.</div></div>`;return;}
   c.innerHTML=`<div class="section-header"><h1 class="section-title">Artists</h1></div>
-    <div class="grid-cards">${DB.artists.map(a=>`
+    <div class="grid-cards">${filteredArtists.map(a=>`
       <div class="card" onclick="openArtist('${a.id}')">
         <div class="card-art" style="border-radius:50%">${a.artUrl?`<img src="${a.artUrl}" style="border-radius:50%">`:'🎤'}<div class="play-overlay" style="border-radius:50%">▶</div></div>
-        <div class="card-name" style="text-align:center">${a.name}</div><div class="card-meta" style="text-align:center">${a.genre||''}</div>
+        <div class="card-name" style="text-align:center">${a.isExplicit?`<span class="explicit-badge">E</span>`:''}${a.name}</div><div class="card-meta" style="text-align:center">${a.genre||''}</div>
       </div>`).join('')}</div>`;
 }
  
 function renderAlbumsPage(c){
-  if(!DB.albums.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Albums</h1></div><div class="empty-state"><div class="empty-icon">💿</div><div>No albums yet.</div></div>`;return;}
-  c.innerHTML=`<div class="section-header"><h1 class="section-title">Albums</h1></div>
-    <div class="grid-cards">${DB.albums.map(al=>{const art=getArtist(al.artistId);return`
+  const filteredAlbums = DB.albums.filter(canView);
+  if(!filteredAlbums.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Albums & EPs</h1></div><div class="empty-state"><div class="empty-icon">💿</div><div>No albums yet.</div></div>`;return;}
+  c.innerHTML=`<div class="section-header"><h1 class="section-title">Albums & EPs</h1></div>
+    <div class="grid-cards">${filteredAlbums.map(al=>{const art=getArtist(al.artistId);return`
       <div class="card" onclick="openAlbum('${al.id}')">
         <div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}<div class="play-overlay">▶</div></div>
-        <div class="card-name">${al.title}</div><div class="card-meta">${art?art.name:''} · ${al.year||''}</div>
+        <div class="card-name">${al.isExplicit?`<span class="explicit-badge">E</span>`:''}${al.title}</div><div class="card-meta">${al.type||'Album'} · ${art?art.name:''}</div>
       </div>`;}).join('')}</div>`;
 }
  
 function renderAllSongs(c){
-  if(!DB.songs.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Songs</h1></div><div class="empty-state"><div class="empty-icon">🎵</div><div>No songs yet.</div></div>`;return;}
-  const ids=DB.songs.map(s=>s.id);
+  const filteredSongs = DB.songs.filter(canView);
+  if(!filteredSongs.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Songs</h1></div><div class="empty-state"><div class="empty-icon">🎵</div><div>No songs yet.</div></div>`;return;}
+  const ids=filteredSongs.map(s=>s.id);
   c.innerHTML=`<div class="section-header"><h1 class="section-title">All Songs</h1>
     <button class="btn btn-secondary btn-sm" onclick="playFromQueue('${JSON.stringify(ids).replace(/"/g,'&quot;')}',0)">▶ Play All</button></div>
-    <div>${DB.songs.map((s,i)=>songRowHtml(s,i,ids)).join('')}</div>`;
+    <div>${filteredSongs.map((s,i)=>songRowHtml(s,i,ids)).join('')}</div>`;
 }
  
 function renderRecent(c){
-  const songs=DB.recentlyPlayed.map(id=>getSong(id)).filter(Boolean);
+  const songs=DB.recentlyPlayed.map(id=>getSong(id)).filter(Boolean).filter(canView);
   if(!songs.length){c.innerHTML=`<div class="section-header"><h1 class="section-title">Recently Played</h1></div><div class="empty-state"><div class="empty-icon">🕐</div><div>Nothing played yet.</div></div>`;return;}
   const ids=songs.map(s=>s.id);
   c.innerHTML=`<div class="section-header"><h1 class="section-title">Recently Played</h1></div>
@@ -823,27 +1105,14 @@ function renderRecent(c){
  
 function openArtist(id){
   const art=getArtist(id); if(!art) return;
-  const mainSongs=DB.songs.filter(s=>{const ids=s.artistIds||[s.artistId];return ids[0]===id;});
-  const mainAlbums=DB.albums.filter(x=>x.artistId===id);
-  const featSongs=DB.songs.filter(s=>{
-    const ids=s.artistIds||[s.artistId];
-    return ids.includes(id)&&ids[0]!==id;
-  });
-  const appearsOnItems=[];
-  const seenAlbums=new Set();
-  featSongs.forEach(s=>{
-    if(s.albumId){
-      if(!seenAlbums.has(s.albumId)){
-        seenAlbums.add(s.albumId);
-        const al=getAlbum(s.albumId);
-        if(al) appearsOnItems.push({type:'album',item:al});
-      }
-    } else {
-      appearsOnItems.push({type:'single',item:s});
-    }
-  });
- 
-  const mainIds=mainSongs.map(s=>s.id);
+  closeFullscreenPlayer();
+  
+  let allInvolvedSongs = DB.songs.filter(s => (s.artistIds||[s.artistId]).includes(id)).filter(canView);
+  let topSongs = [...allInvolvedSongs].sort((a,b) => (b.streams||0) - (a.streams||0)).slice(0,5);
+  const topIds = topSongs.map(s=>s.id);
+  const mainAlbums=DB.albums.filter(x=>x.artistId===id).filter(canView);
+  const singles = allInvolvedSongs.filter(s => !s.albumId);
+
   const c=document.getElementById('main-content');
   c.innerHTML=`
     <button class="back-btn" onclick="navTo('artists',null)">← Back to Artists</button>
@@ -853,50 +1122,44 @@ function openArtist(id){
       </div>
       <div>
         <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.2rem">Artist</div>
-        <h1 style="font-size:2rem;font-weight:800">${art.name}</h1>
-        <div style="color:var(--text3);font-size:.82rem;margin-top:.3rem">${art.genre||''} · ${mainSongs.length} songs</div>
+        <h1 style="font-size:2rem;font-weight:800">${art.isExplicit?`<span class="explicit-badge" style="width:20px;height:20px;font-size:.9rem;border-radius:4px">E</span>`:''}${art.name}</h1>
+        <div style="color:var(--text3);font-size:.82rem;margin-top:.3rem">${art.genre||''}</div>
         ${art.bio?`<div style="font-size:.82rem;color:var(--text2);margin-top:.4rem;max-width:380px">${art.bio}</div>`:''}
-        ${mainSongs.length>0?`<button class="btn btn-primary btn-sm" style="margin-top:.65rem" onclick="playFromQueue('${JSON.stringify(mainIds).replace(/"/g,'&quot;')}',0)">▶ Play All</button>`:''}
+        ${topSongs.length>0?`<button class="btn btn-primary btn-sm" style="margin-top:.65rem" onclick="playFromQueue('${JSON.stringify(topIds).replace(/"/g,'&quot;')}',0)">▶ Play Top Songs</button>`:''}
       </div>
     </div>
+    
+    ${topSongs.length>0?`
+      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Popular</h2></div>
+      <div style="margin-bottom:1.75rem">${topSongs.map((s,i)=>songRowHtml(s,i,topIds)).join('')}</div>`:''}
+      
     ${mainAlbums.length>0?`
-      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Albums</h2></div>
+      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Albums & EPs</h2></div>
       <div class="grid-cards" style="margin-bottom:1.5rem">${mainAlbums.map(al=>`
         <div class="card" onclick="openAlbum('${al.id}')">
           <div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}<div class="play-overlay">▶</div></div>
-          <div class="card-name">${al.title}</div><div class="card-meta">${al.year||''}</div>
+          <div class="card-name">${al.isExplicit?`<span class="explicit-badge">E</span>`:''}${al.title}</div><div class="card-meta">${al.type||'Album'} · ${al.year||''}</div>
         </div>`).join('')}
       </div>`:''}
-    ${mainSongs.length>0?`
-      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Songs</h2></div>
-      <div style="margin-bottom:1.75rem">${mainSongs.map((s,i)=>songRowHtml(s,i,mainIds)).join('')}</div>`:''}
-    ${appearsOnItems.length>0?`
-      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Appears On</h2></div>
-      <div class="grid-cards">${appearsOnItems.map(({type,item})=>{
-        if(type==='album'){
-          const mainArt=getArtist(item.artistId);
-          return`<div class="card" onclick="openAlbum('${item.id}')">
-            <div class="card-art">${item.artUrl?`<img src="${item.artUrl}">`:'💿'}<div class="play-overlay">▶</div></div>
-            <div class="card-name">${item.title}</div>
-            <div class="card-meta">${mainArt?mainArt.name:''} · ${item.year||''}</div>
-          </div>`;
-        } else {
-          const al=getAlbum(item.albumId);
-          const thumb=item.artUrl||(al?al.artUrl:null);
-          const qStr=JSON.stringify([item.id]).replace(/"/g,'&quot;');
-          return`<div class="card" onclick="playFromQueue('${qStr}',0)">
-            <div class="card-art">${thumb?`<img src="${thumb}">`:'🎵'}<div class="play-overlay">▶</div></div>
-            <div class="card-name">${item.title}</div>
-            <div class="card-meta">${songArtistNames(item)}</div>
-          </div>`;
-        }
+      
+    ${singles.length>0?`
+      <div class="section-header" style="margin-bottom:.75rem"><h2 style="font-size:1rem">Singles</h2></div>
+      <div class="grid-cards" style="margin-bottom:1.5rem">${singles.map(s=>{
+        const thumb=s.artUrl;
+        const qStr=JSON.stringify([s.id]).replace(/"/g,'&quot;');
+        return`<div class="card" onclick="playFromQueue('${qStr}',0)">
+          <div class="card-art">${thumb?`<img src="${thumb}">`:'🎵'}<div class="play-overlay">▶</div></div>
+          <div class="card-name">${s.isExplicit?`<span class="explicit-badge">E</span>`:''}${s.title}</div>
+          <div class="card-meta">Single</div>
+        </div>`;
       }).join('')}</div>`:''}`;
 }
  
 function openAlbum(id){
   const al=getAlbum(id); if(!al) return;
+  closeFullscreenPlayer();
   const art=getArtist(al.artistId);
-  const songs=DB.songs.filter(x=>x.albumId===id);
+  const songs=DB.songs.filter(x=>x.albumId===id).filter(canView);
   const ids=songs.map(s=>s.id);
   const c=document.getElementById('main-content');
   c.innerHTML=`
@@ -906,12 +1169,13 @@ function openAlbum(id){
         ${al.artUrl?`<img src="${al.artUrl}" style="width:100%;height:100%;object-fit:cover">`:al.emoji||'💿'}
       </div>
       <div>
-        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.2rem">Album</div>
-        <h1 style="font-size:2rem;font-weight:800">${al.title}</h1>
+        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.2rem">${al.type||'Album'}</div>
+        <h1 style="font-size:2rem;font-weight:800">${al.isExplicit?`<span class="explicit-badge" style="width:20px;height:20px;font-size:.9rem;border-radius:4px">E</span>`:''}${al.title}</h1>
         <div style="color:var(--text3);font-size:.82rem;margin-top:.3rem">
           ${art?`<span class="artist-chip" onclick="openArtist('${art.id}')" style="font-size:.82rem;padding:.1rem 0;background:none;border:none;color:var(--text2)">${art.name}</span>`:''}
           ${al.year?`· ${al.year}`:''}  · ${songs.length} songs
         </div>
+        ${al.bio?`<div style="font-size:.82rem;color:var(--text2);margin-top:.6rem;max-width:380px;line-height:1.4">${al.bio}</div>`:''}
         ${songs.length>0?`<button class="btn btn-primary btn-sm" style="margin-top:.65rem" onclick="playFromQueue('${JSON.stringify(ids).replace(/"/g,'&quot;')}',0)">▶ Play All</button>`:''}
       </div>
     </div>
@@ -921,21 +1185,22 @@ function openAlbum(id){
 function doSearch(q){
   if(!q.trim()){navTo('home',document.querySelector('[data-page="home"]'));return;}
   const ql=q.toLowerCase();
-  const songs=DB.songs.filter(s=>s.title.toLowerCase().includes(ql)||songArtistNames(s).toLowerCase().includes(ql));
-  const artists=DB.artists.filter(a=>a.name.toLowerCase().includes(ql));
-  const albums=DB.albums.filter(al=>al.title.toLowerCase().includes(ql));
+  const songs=DB.songs.filter(canView).filter(s=>s.title.toLowerCase().includes(ql)||songArtistNames(s).toLowerCase().includes(ql));
+  const artists=DB.artists.filter(canView).filter(a=>a.name.toLowerCase().includes(ql));
+  const albums=DB.albums.filter(canView).filter(al=>al.title.toLowerCase().includes(ql));
+  
   document.querySelectorAll('#app-sidebar .nav-item').forEach(n=>n.classList.remove('active'));
   const c=document.getElementById('main-content');
   c.innerHTML=`
     <h1 style="margin-bottom:1.25rem;font-size:1.3rem">Results for "${q}"</h1>
-    ${artists.length?`<div class="section-header"><h2 style="font-size:.95rem">Artists</h2></div><div class="grid-cards" style="margin-bottom:1.25rem">${artists.map(a=>`<div class="card" onclick="openArtist('${a.id}')"><div class="card-art">${a.artUrl?`<img src="${a.artUrl}">`:'🎤'}</div><div class="card-name">${a.name}</div></div>`).join('')}</div>`:''}
-    ${albums.length?`<div class="section-header"><h2 style="font-size:.95rem">Albums</h2></div><div class="grid-cards" style="margin-bottom:1.25rem">${albums.map(al=>`<div class="card" onclick="openAlbum('${al.id}')"><div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}</div><div class="card-name">${al.title}</div></div>`).join('')}</div>`:''}
+    ${artists.length?`<div class="section-header"><h2 style="font-size:.95rem">Artists</h2></div><div class="grid-cards" style="margin-bottom:1.25rem">${artists.map(a=>`<div class="card" onclick="openArtist('${a.id}')"><div class="card-art">${a.artUrl?`<img src="${a.artUrl}">`:'🎤'}</div><div class="card-name">${a.isExplicit?`<span class="explicit-badge">E</span>`:''}${a.name}</div></div>`).join('')}</div>`:''}
+    ${albums.length?`<div class="section-header"><h2 style="font-size:.95rem">Albums & EPs</h2></div><div class="grid-cards" style="margin-bottom:1.25rem">${albums.map(al=>`<div class="card" onclick="openAlbum('${al.id}')"><div class="card-art">${al.artUrl?`<img src="${al.artUrl}">`:'💿'}</div><div class="card-name">${al.isExplicit?`<span class="explicit-badge">E</span>`:''}${al.title}</div><div class="card-meta">${al.type||'Album'}</div></div>`).join('')}</div>`:''}
     ${songs.length?`<div class="section-header"><h2 style="font-size:.95rem">Songs</h2></div><div>${songs.map((s,i)=>songRowHtml(s,i,songs.map(x=>x.id))).join('')}</div>`:''}
     ${!songs.length&&!artists.length&&!albums.length?`<div class="empty-state"><div class="empty-icon">🔍</div><div>No results found.</div></div>`:''}`;
 }
  
 // ============================================================
-// PLAYLISTS (With Direct Upload)
+// PLAYLISTS
 // ============================================================
 let selectedPlArtFile = null;
 
@@ -972,36 +1237,24 @@ async function createPlaylist(){
   if(!name) return showMsg('create-playlist-msg','Please enter a name.');
   
   const btn = document.getElementById('btn-create-pl');
-  btn.disabled = true;
-  btn.textContent = 'Uploading...';
+  btn.disabled = true; btn.textContent = 'Uploading...';
 
   try {
     let artUrl = null;
-    if(selectedPlArtFile) {
-      artUrl = await uploadFileToFirebase(selectedPlArtFile, 'playlists');
-    }
-    
+    if(selectedPlArtFile) { artUrl = await uploadFileToFirebase(selectedPlArtFile, 'playlists'); }
     DB.playlists.push({id:'pl'+Date.now(),name,desc:document.getElementById('pl-desc').value.trim(),artUrl:artUrl,userId:currentUserId,songs:[]});
-    saveDB();
-    closeModal('modal-create-playlist');
-    renderPlaylistNav();
-  } catch (error) {
-    showMsg('create-playlist-msg', 'Error creating playlist.');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Create Playlist';
-  }
+    saveDB(); closeModal('modal-create-playlist'); renderPlaylistNav();
+  } catch (error) { showMsg('create-playlist-msg', 'Error creating playlist.');
+  } finally { btn.disabled = false; btn.textContent = 'Create Playlist'; }
 }
 function deletePlaylist(id){
   DB.playlists=DB.playlists.filter(x=>x.id!==id);
-  saveDB();
-  renderPlaylistNav();
-  navTo('home',document.querySelector('[data-page="home"]'));
+  saveDB(); renderPlaylistNav(); navTo('home',document.querySelector('[data-page="home"]'));
 }
 function renderPlaylistPage(c,id){
   const pl=DB.playlists.find(x=>x.id===id);
   if(!pl){c.innerHTML='<div class="empty-state">Playlist not found.</div>';return;}
-  const songs=pl.songs.map(sid=>getSong(sid)).filter(Boolean);
+  const songs=pl.songs.map(sid=>getSong(sid)).filter(Boolean).filter(canView);
   const ids=songs.map(s=>s.id);
   const qStr=JSON.stringify(ids).replace(/"/g,'&quot;');
   c.innerHTML=`
@@ -1022,14 +1275,15 @@ function renderPlaylistPage(c,id){
       const al=getAlbum(s.albumId);
       const thumb=s.artUrl||(al?al.artUrl:null);
       const playing=currentSongId===s.id&&isPlaying;
+      const explicitBadge = s.isExplicit ? `<span class="explicit-badge">E</span>` : '';
       return`<div class="song-row ${playing?'playing':''}" onclick="playFromQueue('${qStr}',${i})">
         <div class="song-num">${playing?'<span class="playing-dot"></span>':(i+1)}</div>
         <div class="song-thumb">${thumb?`<img src="${thumb}">`:'🎵'}</div>
-        <div class="song-info"><div class="song-title">${s.title}</div><div class="song-artist">${songArtistNames(s)}</div></div>
+        <div class="song-info"><div class="song-title">${explicitBadge}${s.title}</div><div class="song-artist">${songArtistNames(s)}</div></div>
         <div class="song-actions"><button class="btn btn-danger btn-xs" onclick="event.stopPropagation();removeFromPlaylist('${pl.id}','${s.id}')">Remove</button></div>
         <div class="song-dur">${s.duration||'—'}</div>
       </div>`;}).join('')}</div>`
-    :`<div class="empty-state"><div class="empty-icon">🎵</div><div>No songs yet. Add some using the "+ Playlist" button on any song.</div></div>`}`;
+    :`<div class="empty-state"><div class="empty-icon">🎵</div><div>No available songs.</div></div>`}`;
 }
 function showAddToPlaylist(){
   if(!currentSongId) return;
@@ -1057,20 +1311,17 @@ function populateAddToPlaylist(songId){
 function addSongToPlaylist(plId,songId){
   const pl=DB.playlists.find(x=>x.id===plId); if(!pl) return;
   if(!pl.songs.includes(songId)) pl.songs.push(songId);
-  saveDB();
-  closeModal('modal-add-to-playlist');
-  renderPlaylistNav();
+  saveDB(); closeModal('modal-add-to-playlist'); renderPlaylistNav();
 }
 function removeFromPlaylist(plId,songId){
   const pl=DB.playlists.find(x=>x.id===plId); if(!pl) return;
   pl.songs=pl.songs.filter(x=>x!==songId);
-  saveDB();
-  renderPlaylistPage(document.getElementById('main-content'),plId);
+  saveDB(); renderPlaylistPage(document.getElementById('main-content'),plId);
 }
 function closeModal(id){document.getElementById(id).classList.add('hidden');}
  
 // ============================================================
-// PLAYER
+// PLAYER & FULLSCREEN
 // ============================================================
 function shuffleArray(arr){
   const a=[...arr];
@@ -1097,26 +1348,68 @@ function shuffleAndPlay(queueIds){
   isShuffle=true; updateShuffleBtn();
   playFromQueue(queueIds,0);
 }
+
 function loadSong(id){
   const s=getSong(id); if(!s) return;
+  
+  if(s.isExplicit && appSettings.blockExplicit) {
+    nextSong(); return; 
+  }
+
   currentSongId=id;
+  s.streams = (s.streams || 0) + 1;
   if(!DB.recentlyPlayed.includes(id)) DB.recentlyPlayed.unshift(id);
   if(DB.recentlyPlayed.length>50) DB.recentlyPlayed.pop();
-  saveDB();
+  saveDB(true); 
+
   if(s.audioUrl){
     audio.src=s.audioUrl;
     audio.play().then(()=>{isPlaying=true;updatePlayBtn();}).catch(()=>{isPlaying=false;updatePlayBtn();});
-  } else {
-    audio.src=''; isPlaying=false; updatePlayBtn();
-  }
+  } else { audio.src=''; isPlaying=false; updatePlayBtn(); }
+  
   const al=getAlbum(s.albumId);
-  document.getElementById('player-title').textContent=s.title;
-  document.getElementById('player-artist').textContent=songArtistNames(s);
   const artImg=s.artUrl||(al?al.artUrl:null);
-  document.getElementById('player-cover').innerHTML=artImg?`<img src="${artImg}">`:s.emoji||'♪';
+  const coverHtml = artImg?`<img src="${artImg}">`:s.emoji||'♪';
+  const explicitBadge = s.isExplicit ? `<span class="explicit-badge" style="width:16px;height:16px;font-size:.7rem">E</span>` : '';
+
+  // Update Mini Player
+  document.getElementById('player-title').innerHTML= explicitBadge + s.title;
+  document.getElementById('player-artist').textContent=songArtistNames(s);
+  document.getElementById('player-cover').innerHTML=coverHtml;
+  
+  // Update Fullscreen Player
+  document.getElementById('fs-cover').src = artImg || '';
+  document.getElementById('fs-cover').style.display = artImg ? 'block' : 'none';
+  document.getElementById('fs-title').innerHTML = explicitBadge + s.title;
+  
+  const artistIds = s.artistIds || [s.artistId];
+  document.getElementById('fs-artist').innerHTML = artistIds.map(aid => {
+    const a = getArtist(aid); if(!a) return '';
+    return `<span class="fs-artist-link" onclick="openArtist('${aid}')">${a.name}</span>`;
+  }).join(', ');
+
+  // Bio & Credits
+  const bioContainer = document.getElementById('fs-bio-container');
+  const creditsContainer = document.getElementById('fs-credits-container');
+  if(s.bio || (s.credits && s.credits.length > 0)) {
+    bioContainer.classList.remove('hidden');
+    document.getElementById('fs-bio-text').textContent = s.bio || '';
+    if(s.credits && s.credits.length > 0) {
+      creditsContainer.classList.remove('hidden');
+      creditsContainer.innerHTML = s.credits.map(c => {
+        let nameHtml = c.name;
+        if(c.artistId) nameHtml = `<span class="fs-credit-link" onclick="openArtist('${c.artistId}')">${c.name}</span>`;
+        return `<div class="fs-credit-row"><span class="fs-credit-role">${c.role}</span><span class="fs-credit-name">${nameHtml}</span></div>`;
+      }).join('');
+    } else { creditsContainer.classList.add('hidden'); }
+  } else { bioContainer.classList.add('hidden'); }
 }
+
+function openFullscreenPlayer() { document.getElementById('fullscreen-player').classList.add('active'); }
+function closeFullscreenPlayer() { document.getElementById('fullscreen-player').classList.remove('active'); }
+
 function togglePlay(){
-  if(!currentSongId){if(DB.songs.length) playFromQueue(DB.songs.map(s=>s.id),0); return;}
+  if(!currentSongId){if(DB.songs.length) playFromQueue(DB.songs.filter(canView).map(s=>s.id),0); return;}
   if(isPlaying){audio.pause();}else{audio.play().catch(()=>{});}
 }
 function prevSong(){if(currentQueueIdx>0){currentQueueIdx--;loadSong(currentQueue[currentQueueIdx]);}}
@@ -1141,31 +1434,51 @@ function toggleShuffle(){
   updateShuffleBtn();
 }
 function toggleRepeat(){isRepeat=!isRepeat;updateRepeatBtn();}
-function updatePlayBtn(){document.getElementById('play-btn').textContent=isPlaying?'⏸':'▶';}
-function updateShuffleBtn(){document.getElementById('shuffle-btn').classList.toggle('active-ctrl',isShuffle);}
-function updateRepeatBtn(){document.getElementById('repeat-btn').classList.toggle('active-ctrl',isRepeat);}
-function seekTrack(e){if(!audio.duration)return;audio.currentTime=(e.offsetX/document.getElementById('progress-bar').offsetWidth)*audio.duration;}
+function updatePlayBtn(){
+  document.getElementById('play-btn').textContent=isPlaying?'⏸':'▶';
+  document.getElementById('fs-play-btn').textContent=isPlaying?'⏸':'▶';
+}
+function updateShuffleBtn(){
+  document.getElementById('shuffle-btn').classList.toggle('active-ctrl',isShuffle);
+  document.getElementById('fs-shuffle-btn').classList.toggle('active-ctrl',isShuffle);
+}
+function updateRepeatBtn(){
+  document.getElementById('repeat-btn').classList.toggle('active-ctrl',isRepeat);
+  document.getElementById('fs-repeat-btn').classList.toggle('active-ctrl',isRepeat);
+}
+function seekTrack(e, barElement){
+  if(!audio.duration)return;
+  audio.currentTime=(e.offsetX/barElement.offsetWidth)*audio.duration;
+}
 audio.addEventListener('timeupdate',()=>{
   if(!audio.duration)return;
-  document.getElementById('progress-fill').style.width=((audio.currentTime/audio.duration)*100)+'%';
-  document.getElementById('time-cur').textContent=fmtTime(audio.currentTime);
-  document.getElementById('time-dur').textContent=fmtTime(audio.duration);
+  const pct = ((audio.currentTime/audio.duration)*100)+'%';
+  const cTime = fmtTime(audio.currentTime);
+  const dTime = fmtTime(audio.duration);
+  
+  document.getElementById('progress-fill').style.width = pct;
+  document.getElementById('time-cur').textContent = cTime;
+  document.getElementById('time-dur').textContent = dTime;
+
+  document.getElementById('fs-progress-fill').style.width = pct;
+  document.getElementById('fs-time-cur').textContent = cTime;
+  document.getElementById('fs-time-dur').textContent = dTime;
 });
 audio.addEventListener('ended',()=>nextSong());
 audio.addEventListener('play',()=>{isPlaying=true;updatePlayBtn();});
 audio.addEventListener('pause',()=>{isPlaying=false;updatePlayBtn();});
  
 // ============================================================
-// ADMIN (WITH DIRECT UPLOADS)
+// ADMIN 
 // ============================================================
 function adminNav(panel,btn){
   document.querySelectorAll('#screen-admin .nav-item').forEach(n=>n.classList.remove('active'));
   if(btn) btn.classList.add('active');
   document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('admin-panel-'+panel).classList.add('active');
-  ({dashboard:renderAdminDashboard,songs:renderAdminSongs,albums:renderAdminAlbums,artists:renderAdminArtists,codes:renderAdminCodes,users:renderAdminUsers,settings:renderAdminSettings})[panel]();
+  ({dashboard:renderAdminDashboard,songs:renderAdminSongs,albums:renderAdminAlbums,artists:renderAdminArtists,profiles:renderAdminProfiles,codes:renderAdminCodes,users:renderAdminUsers,settings:renderAdminSettings})[panel]();
 }
- 
+
 function renderAdminDashboard(){
   document.getElementById('admin-panel-dashboard').innerHTML=`
     <h2 style="margin-bottom:1.25rem">Dashboard</h2>
@@ -1174,13 +1487,90 @@ function renderAdminDashboard(){
       <div class="stat-card"><div class="stat-val">${DB.albums.length}</div><div class="stat-label">Albums</div></div>
       <div class="stat-card"><div class="stat-val">${DB.artists.length}</div><div class="stat-label">Artists</div></div>
       <div class="stat-card"><div class="stat-val">${DB.users.length}</div><div class="stat-label">Users</div></div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-card"><div class="stat-val">${DB.accessCodes.filter(x=>!x.used).length}</div><div class="stat-label">Unused Codes</div></div>
-      <div class="stat-card"><div class="stat-val">${DB.accessCodes.filter(x=>x.used).length}</div><div class="stat-label">Used Codes</div></div>
-      <div class="stat-card"><div class="stat-val">${DB.playlists.length}</div><div class="stat-label">Playlists</div></div>
-      <div class="stat-card"><div class="stat-val">${DB.recentlyPlayed.length}</div><div class="stat-label">Streams</div></div>
     </div>`;
+}
+
+// ---- PROFILES UI HELPERS ----
+function buildProfilePicker(containerId, selectedIds = ['default']) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = `
+    <div class="prof-picker">
+      ${DB.profiles.map(p => `
+        <label class="prof-picker-item">
+          <input type="checkbox" value="${p.id}" ${selectedIds.includes(p.id) ? 'checked' : ''}>
+          <span>${p.name}</span>
+        </label>
+      `).join('')}
+    </div>`;
+}
+function getProfilePickerValues(containerId) {
+  const el = document.getElementById(containerId);
+  if(!el) return ['default'];
+  const checked = Array.from(el.querySelectorAll('input:checked')).map(i => i.value);
+  return checked.length > 0 ? checked : ['default'];
+}
+function getProfileNames(profileIds) {
+  if(!profileIds || profileIds.length === 0) return 'Default';
+  return profileIds.map(id => DB.profiles.find(p=>p.id===id)?.name || id).join(', ');
+}
+
+// ---- PROFILES (Req 2) ----
+function renderAdminProfiles() {
+  const el = document.getElementById('admin-panel-profiles');
+  el.innerHTML=`
+    <div class="section-header"><h2>Profiles</h2></div>
+    <div class="form-card">
+      <h3>Add New Profile</h3>
+      <div class="form-grid" style="align-items:end">
+        <div class="form-group"><label>Profile Name</label><input type="text" id="new-prof-name" placeholder="Kids Profile..."></div>
+        <div class="form-group" style="flex-direction:row;align-items:center;margin-bottom:.85rem">
+          <input type="checkbox" id="new-prof-hide" style="width:18px;height:18px;margin-bottom:0">
+          <label style="margin-bottom:0">Hide Default Content</label>
+        </div>
+        <div class="form-group full">
+          <button class="btn btn-primary btn-sm" onclick="addProfile()">Add Profile</button>
+        </div>
+      </div>
+      <div id="prof-msg" style="margin-top:.5rem"></div>
+    </div>
+    <table><thead><tr><th>Profile Name</th><th>ID</th><th>Hide Defaults</th><th></th></tr></thead>
+    <tbody>${DB.profiles.map(p=>`<tr>
+      <td>${p.name} ${p.id==='default'?'<span class="tag tag-active">System</span>':''}</td>
+      <td><code>${p.id}</code></td>
+      <td>${p.hideDefault?'Yes':'No'}</td>
+      <td>${p.id==='default'?'':`<button class="btn btn-danger btn-xs" onclick="deleteProfile('${p.id}')">Del</button>`}</td>
+    </tr>`).join('')}</tbody></table>
+  `;
+}
+function addProfile() {
+  const name = document.getElementById('new-prof-name').value.trim();
+  const hide = document.getElementById('new-prof-hide').checked;
+  if(!name) return showMsg('prof-msg','Name is required.');
+  const id = name.toLowerCase().replace(/[^a-z0-9]/g, '') + Date.now().toString().slice(-4);
+  DB.profiles.push({id, name, hideDefault: hide});
+  saveDB(false); renderAdminProfiles();
+}
+function deleteProfile(id) {
+  if(id === 'default') return;
+  DB.profiles = DB.profiles.filter(p => p.id !== id);
+  // Reassign users to default
+  DB.users.forEach(u => { if(u.profileId === id) u.profileId = 'default'; });
+  
+  // Strip the deleted profile from content arrays
+  const stripProf = arr => {
+    let newArr = arr.filter(x => x !== id);
+    return newArr.length === 0 ? ['default'] : newArr;
+  };
+  DB.songs.forEach(s => s.profileIds = stripProf(s.profileIds || []));
+  DB.albums.forEach(a => a.profileIds = stripProf(a.profileIds || []));
+  DB.artists.forEach(a => a.profileIds = stripProf(a.profileIds || []));
+  
+  saveDB(false); renderAdminProfiles();
+}
+
+function getProfileOptionsHTML(selectedId) {
+  return DB.profiles.map(p => `<option value="${p.id}" ${p.id === selectedId ? 'selected' : ''}>${p.name}</option>`).join('');
 }
  
 // ---- MULTI-ARTIST PICKER ----
@@ -1190,7 +1580,6 @@ function buildArtistPicker(containerId,selectedIds){
   const el=document.getElementById(containerId);
   el.innerHTML=`
     <div class="artist-picker" id="picker-list-${containerId}">
-      ${DB.artists.length===0?`<div style="color:var(--text3);font-size:.8rem;padding:.3rem">No artists added yet.</div>`:''}
       ${DB.artists.map(a=>`
         <label class="artist-picker-item ${pickerSelectedIds.includes(a.id)?'selected':''}" id="pitem-${containerId}-${a.id}">
           <input type="checkbox" value="${a.id}" ${pickerSelectedIds.includes(a.id)?'checked':''} onchange="pickerToggle('${containerId}','${a.id}',this.checked)">
@@ -1202,11 +1591,8 @@ function buildArtistPicker(containerId,selectedIds){
   updatePickerPreview(containerId);
 }
 function pickerToggle(containerId,artistId,checked){
-  if(checked){
-    if(!pickerSelectedIds.includes(artistId)) pickerSelectedIds.push(artistId);
-  } else {
-    pickerSelectedIds=pickerSelectedIds.filter(x=>x!==artistId);
-  }
+  if(checked){ if(!pickerSelectedIds.includes(artistId)) pickerSelectedIds.push(artistId);
+  } else { pickerSelectedIds=pickerSelectedIds.filter(x=>x!==artistId); }
   const item=document.getElementById(`pitem-${containerId}-${artistId}`);
   if(item) item.classList.toggle('selected',checked);
   updatePickerPreview(containerId);
@@ -1228,35 +1614,52 @@ function pickerRemove(containerId,artistId){
  
 // ---- ARTISTS ----
 let selectedArtistArtFile = null;
+let editingArtistId = null;
+
 function renderAdminArtists(){
   const el=document.getElementById('admin-panel-artists');
   el.innerHTML=`
     <div class="section-header"><h2>Artists</h2></div>
-    <div class="form-card">
-      <h3>Add Artist</h3>
+    <div class="form-card" id="artist-form-card">
+      <h3 id="art-form-title">Add Artist</h3>
       <div class="form-grid">
         <div class="form-group"><label>Name</label><input type="text" id="new-art-name" placeholder="Artist name"></div>
         <div class="form-group"><label>Genre</label><input type="text" id="new-art-genre" placeholder="Electronic, Rock..."></div>
-        <div class="form-group full"><label>Bio</label><textarea id="new-art-bio" placeholder="Short bio..."></textarea></div>
+        <div class="form-group">
+          <label>Profile Assignments (Tick multiple)</label>
+          <div id="new-art-prof-picker"></div>
+        </div>
+        <div class="form-group" style="justify-content:center;flex-direction:row;align-items:center;gap:.5rem">
+          <input type="checkbox" id="new-art-exp" style="width:18px;height:18px;margin-bottom:0">
+          <label style="margin-bottom:0;color:var(--danger)">Is Explicit Content</label>
+        </div>
+        <div class="form-group full"><label>Bio</label><textarea id="new-art-bio" placeholder="Full artist bio..."></textarea></div>
         <div class="form-group full">
           <label>Artist Photo</label>
           <div class="upload-zone"><input type="file" accept="image/*" id="art-art-file" onchange="previewArtistArt(this)">
           <div class="upload-zone-label">📷 Click to upload photo</div>
-          <div class="upload-zone-sub">JPG, PNG, WEBP</div>
           <div id="art-art-preview"></div></div>
         </div>
       </div>
       <div id="art-form-msg" style="margin-top:.5rem"></div>
-      <button class="btn btn-primary btn-sm" id="btn-add-artist" style="margin-top:.85rem" onclick="addArtist()">Add Artist</button>
+      <div style="display:flex;gap:.5rem;margin-top:.85rem">
+        <button class="btn btn-primary btn-sm" id="btn-add-artist" onclick="saveArtist()">Save Artist</button>
+        <button class="btn btn-secondary btn-sm hidden" id="btn-cancel-art-edit" onclick="cancelArtistEdit()">Cancel Edit</button>
+      </div>
     </div>
-    <table><thead><tr><th>Art</th><th>Name</th><th>Genre</th><th>Albums</th><th>Songs</th><th></th></tr></thead>
+    <table><thead><tr><th>Art</th><th>Name</th><th>Profiles</th><th>Exp</th><th></th></tr></thead>
     <tbody>${DB.artists.map(a=>`<tr>
       <td>${a.artUrl?`<img src="${a.artUrl}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`:a.emoji||'🎤'}</td>
-      <td>${a.name}</td><td>${a.genre||'—'}</td>
-      <td>${DB.albums.filter(x=>x.artistId===a.id).length}</td>
-      <td>${DB.songs.filter(s=>(s.artistIds||[s.artistId]).includes(a.id)).length}</td>
-      <td><button class="btn btn-danger btn-xs" onclick="deleteArtist('${a.id}')">Delete</button></td>
+      <td>${a.name}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${getProfileNames(a.profileIds)}</td>
+      <td>${a.isExplicit?'<span style="color:var(--danger)">E</span>':'-'}</td>
+      <td>
+        <button class="btn btn-secondary btn-xs" onclick="editArtist('${a.id}')">Edit</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteArtist('${a.id}')">Del</button>
+      </td>
     </tr>`).join('')}</tbody></table>`;
+    
+  buildProfilePicker('new-art-prof-picker', ['default']);
 }
 function previewArtistArt(input){
   if(!input.files[0])return;
@@ -1265,64 +1668,110 @@ function previewArtistArt(input){
     document.getElementById('art-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`;
   });
 }
-async function addArtist(){
+function editArtist(id) {
+  const a = getArtist(id); if(!a) return;
+  editingArtistId = id;
+  document.getElementById('art-form-title').textContent = 'Edit Artist';
+  document.getElementById('new-art-name').value = a.name;
+  document.getElementById('new-art-genre').value = a.genre || '';
+  document.getElementById('new-art-bio').value = a.bio || '';
+  document.getElementById('new-art-exp').checked = a.isExplicit || false;
+  document.getElementById('art-art-preview').innerHTML = a.artUrl ? `<img src="${a.artUrl}" class="upload-preview">` : '';
+  
+  buildProfilePicker('new-art-prof-picker', a.profileIds || ['default']);
+  
+  selectedArtistArtFile = null;
+  document.getElementById('btn-add-artist').textContent = 'Update Artist';
+  document.getElementById('btn-cancel-art-edit').classList.remove('hidden');
+  document.getElementById('artist-form-card').scrollIntoView({behavior:'smooth'});
+}
+function cancelArtistEdit() {
+  editingArtistId = null;
+  renderAdminArtists();
+}
+async function saveArtist(){
   const name=document.getElementById('new-art-name').value.trim();
   const genre=document.getElementById('new-art-genre').value.trim();
   const bio=document.getElementById('new-art-bio').value.trim();
+  const profs=getProfilePickerValues('new-art-prof-picker');
+  const isExp=document.getElementById('new-art-exp').checked;
   if(!name) return showMsg('art-form-msg','Name is required.');
 
   const btn = document.getElementById('btn-add-artist');
-  btn.disabled = true;
-  btn.textContent = 'Uploading...';
+  btn.disabled = true; btn.textContent = 'Saving...';
 
   try {
     let artUrl = null;
-    if (selectedArtistArtFile) {
-      artUrl = await uploadFileToFirebase(selectedArtistArtFile, 'artists');
+    if (selectedArtistArtFile) artUrl = await uploadFileToFirebase(selectedArtistArtFile, 'artists');
+
+    if (editingArtistId) {
+      const a = getArtist(editingArtistId);
+      a.name = name; a.genre = genre; a.bio = bio; a.profileIds = profs; a.isExplicit = isExp;
+      if (artUrl) a.artUrl = artUrl;
+      editingArtistId = null;
+    } else {
+      DB.artists.push({id:'a'+Date.now(),name,genre,bio,profileIds:profs,isExplicit:isExp,artUrl:artUrl,emoji:'🎤'});
     }
     
-    DB.artists.push({id:'a'+Date.now(),name,genre,bio,artUrl:artUrl,emoji:'🎤'});
     selectedArtistArtFile = null;
-    saveDB();
-    showMsg('art-form-msg','Artist added!','ok');
+    saveDB(false); showMsg('art-form-msg','Artist saved!','ok');
     setTimeout(()=>renderAdminArtists(),700);
-  } catch (e) {
-    showMsg('art-form-msg', 'Error saving artist.');
-    btn.disabled = false;
-    btn.textContent = 'Add Artist';
-  }
+  } catch (e) { showMsg('art-form-msg', 'Error saving artist.'); btn.disabled = false; btn.textContent = 'Save Artist'; }
 }
-function deleteArtist(id){DB.artists=DB.artists.filter(x=>x.id!==id);saveDB();renderAdminArtists();}
+function deleteArtist(id){DB.artists=DB.artists.filter(x=>x.id!==id);saveDB(false);renderAdminArtists();}
  
 // ---- ALBUMS ----
 let selectedAlbumArtFile = null;
+let editingAlbumId = null;
+
 function renderAdminAlbums(){
   const el=document.getElementById('admin-panel-albums');
   el.innerHTML=`
-    <div class="section-header"><h2>Albums</h2></div>
-    <div class="form-card">
-      <h3>Add Album</h3>
+    <div class="section-header"><h2>Albums & EPs</h2></div>
+    <div class="form-card" id="album-form-card">
+      <h3 id="alb-form-title">Add Album / EP</h3>
       <div class="form-grid">
-        <div class="form-group"><label>Title</label><input type="text" id="new-alb-title" placeholder="Album title"></div>
+        <div class="form-group"><label>Title</label><input type="text" id="new-alb-title" placeholder="Title"></div>
+        <div class="form-group"><label>Type</label><select id="new-alb-type"><option value="Album">Album</option><option value="EP">EP</option></select></div>
         <div class="form-group"><label>Year</label><input type="text" id="new-alb-year" placeholder="2025"></div>
-        <div class="form-group full"><label>Artist (one per album)</label><select id="new-alb-artist"><option value="">Select artist...</option>${DB.artists.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Artist (Main)</label><select id="new-alb-artist"><option value="">Select artist...</option>${DB.artists.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}</select></div>
+        
+        <div class="form-group">
+          <label>Profile Assignments (Tick multiple)</label>
+          <div id="new-alb-prof-picker"></div>
+        </div>
+        
+        <div class="form-group" style="justify-content:center;flex-direction:row;align-items:center;gap:.5rem">
+          <input type="checkbox" id="new-alb-exp" style="width:18px;height:18px;margin-bottom:0">
+          <label style="margin-bottom:0;color:var(--danger)">Explicit Content</label>
+        </div>
+        <div class="form-group full"><label>Bio / Description</label><textarea id="new-alb-bio" placeholder="Album description..."></textarea></div>
         <div class="form-group full"><label>Album Art</label>
           <div class="upload-zone"><input type="file" accept="image/*" id="alb-art-file" onchange="previewAlbumArt(this)">
-          <div class="upload-zone-label">🖼 Click to upload album art</div>
-          <div class="upload-zone-sub">JPG, PNG, WEBP</div>
+          <div class="upload-zone-label">🖼 Click to upload art</div>
           <div id="alb-art-preview"></div></div>
         </div>
       </div>
       <div id="alb-form-msg" style="margin-top:.5rem"></div>
-      <button class="btn btn-primary btn-sm" id="btn-add-album" style="margin-top:.85rem" onclick="addAlbum()">Add Album</button>
+      <div style="display:flex;gap:.5rem;margin-top:.85rem">
+        <button class="btn btn-primary btn-sm" id="btn-add-album" onclick="saveAlbum()">Save Release</button>
+        <button class="btn btn-secondary btn-sm hidden" id="btn-cancel-alb-edit" onclick="cancelAlbumEdit()">Cancel Edit</button>
+      </div>
     </div>
-    <table><thead><tr><th>Art</th><th>Title</th><th>Artist</th><th>Year</th><th>Songs</th><th></th></tr></thead>
+    <table><thead><tr><th>Art</th><th>Title</th><th>Profiles</th><th>Artist</th><th>Exp</th><th></th></tr></thead>
     <tbody>${DB.albums.map(al=>{const art=getArtist(al.artistId);return`<tr>
       <td>${al.artUrl?`<img src="${al.artUrl}" style="width:32px;height:32px;border-radius:5px;object-fit:cover">`:al.emoji||'💿'}</td>
-      <td>${al.title}</td><td>${art?art.name:'—'}</td><td>${al.year||'—'}</td>
-      <td>${DB.songs.filter(x=>x.albumId===al.id).length}</td>
-      <td><button class="btn btn-danger btn-xs" onclick="deleteAlbum('${al.id}')">Delete</button></td>
+      <td>${al.title}</td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${getProfileNames(al.profileIds)}</td>
+      <td>${art?art.name:'—'}</td>
+      <td>${al.isExplicit?'<span style="color:var(--danger)">E</span>':'-'}</td>
+      <td>
+        <button class="btn btn-secondary btn-xs" onclick="editAlbum('${al.id}')">Edit</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteAlbum('${al.id}')">Del</button>
+      </td>
     </tr>`;}).join('')}</tbody></table>`;
+    
+  buildProfilePicker('new-alb-prof-picker', ['default']);
 }
 function previewAlbumArt(input){
   if(!input.files[0])return;
@@ -1331,86 +1780,168 @@ function previewAlbumArt(input){
     document.getElementById('alb-art-preview').innerHTML=`<img src="${url}" class="upload-preview">`;
   });
 }
-async function addAlbum(){
+function editAlbum(id) {
+  const al = getAlbum(id); if(!al) return;
+  editingAlbumId = id;
+  document.getElementById('alb-form-title').textContent = 'Edit Release';
+  document.getElementById('new-alb-title').value = al.title;
+  document.getElementById('new-alb-type').value = al.type || 'Album';
+  document.getElementById('new-alb-year').value = al.year || '';
+  document.getElementById('new-alb-artist').value = al.artistId || '';
+  document.getElementById('new-alb-bio').value = al.bio || '';
+  document.getElementById('new-alb-exp').checked = al.isExplicit || false;
+  document.getElementById('alb-art-preview').innerHTML = al.artUrl ? `<img src="${al.artUrl}" class="upload-preview">` : '';
+  
+  buildProfilePicker('new-alb-prof-picker', al.profileIds || ['default']);
+  
+  selectedAlbumArtFile = null;
+  document.getElementById('btn-add-album').textContent = 'Update Release';
+  document.getElementById('btn-cancel-alb-edit').classList.remove('hidden');
+  document.getElementById('album-form-card').scrollIntoView({behavior:'smooth'});
+}
+function cancelAlbumEdit() { editingAlbumId = null; renderAdminAlbums(); }
+
+async function saveAlbum(){
   const title=document.getElementById('new-alb-title').value.trim();
+  const type=document.getElementById('new-alb-type').value;
   const year=document.getElementById('new-alb-year').value.trim();
   const artistId=document.getElementById('new-alb-artist').value;
+  const bio=document.getElementById('new-alb-bio').value.trim();
+  const profs=getProfilePickerValues('new-alb-prof-picker');
+  const isExp=document.getElementById('new-alb-exp').checked;
+
   if(!title) return showMsg('alb-form-msg','Title is required.');
 
   const btn = document.getElementById('btn-add-album');
-  btn.disabled = true;
-  btn.textContent = 'Uploading...';
+  btn.disabled = true; btn.textContent = 'Saving...';
 
   try {
     let artUrl = null;
-    if (selectedAlbumArtFile) {
-      artUrl = await uploadFileToFirebase(selectedAlbumArtFile, 'albums');
+    if (selectedAlbumArtFile) artUrl = await uploadFileToFirebase(selectedAlbumArtFile, 'albums');
+
+    if(editingAlbumId) {
+      const al = getAlbum(editingAlbumId);
+      al.title = title; al.type = type; al.year = year; al.artistId = artistId; al.bio = bio;
+      al.profileIds = profs; al.isExplicit = isExp;
+      if (artUrl) al.artUrl = artUrl;
+      editingAlbumId = null;
+    } else {
+      DB.albums.push({id:'al'+Date.now(),title,type,artistId,year,bio,profileIds:profs,isExplicit:isExp,artUrl:artUrl,emoji:'💿'});
     }
-    DB.albums.push({id:'al'+Date.now(),title,artistId,year,artUrl:artUrl,emoji:'💿'});
+    
     selectedAlbumArtFile = null;
-    saveDB();
-    showMsg('alb-form-msg','Album added!','ok');
+    saveDB(false); showMsg('alb-form-msg','Saved!','ok');
     setTimeout(()=>renderAdminAlbums(),700);
-  } catch (e) {
-    showMsg('alb-form-msg', 'Error saving album.');
-    btn.disabled = false;
-    btn.textContent = 'Add Album';
-  }
+  } catch (e) { showMsg('alb-form-msg', 'Error saving album.'); btn.disabled = false; btn.textContent = 'Save Release'; }
 }
-function deleteAlbum(id){DB.albums=DB.albums.filter(x=>x.id!==id);saveDB();renderAdminAlbums();}
+function deleteAlbum(id){DB.albums=DB.albums.filter(x=>x.id!==id);saveDB(false);renderAdminAlbums();}
  
 // ---- SONGS ----
 let selectedSongAudioFile = null;
 let selectedSongArtFile = null;
+let editingSongId = null;
+let activeCredits = [];
 
 function renderAdminSongs(){
   const el=document.getElementById('admin-panel-songs');
   el.innerHTML=`
     <div class="section-header"><h2>Songs</h2></div>
-    <div class="form-card">
-      <h3>Add Song</h3>
+    <div class="form-card" id="song-form-card">
+      <h3 id="song-form-title">Add Song</h3>
       <div class="form-grid">
         <div class="form-group"><label>Title</label><input type="text" id="new-song-title" placeholder="Song title"></div>
-        <div class="form-group"><label>Album (optional)</label><select id="new-song-album"><option value="">No album / Single</option>${DB.albums.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Album (optional)</label><select id="new-song-album"><option value="">Single (No Album)</option>${DB.albums.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')}</select></div>
+        
+        <div class="form-group">
+          <label>Profile Assignments (Tick multiple)</label>
+          <div id="new-song-prof-picker"></div>
+        </div>
+        <div class="form-group" style="justify-content:center;flex-direction:row;align-items:center;gap:.5rem">
+          <input type="checkbox" id="new-song-exp" style="width:18px;height:18px;margin-bottom:0">
+          <label style="margin-bottom:0;color:var(--danger)">Explicit Content</label>
+        </div>
+
         <div class="form-group full">
-          <label>Artists <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">— first selected = primary artist</span></label>
+          <label>Artists <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">— first selected = primary</span></label>
           <div id="song-artist-picker"></div>
         </div>
         
         <div class="form-group full"><label>Audio File (.mp3, .wav)</label>
           <div class="upload-zone" style="border-color: rgba(56,189,248,.3)">
             <input type="file" accept="audio/*" id="song-audio-file" onchange="previewSongAudio(this)">
-            <div class="upload-zone-label" style="color:#7dd3fc">🎵 Click to choose Audio File</div>
-            <div class="upload-zone-sub">Uploads securely to your Firebase Storage</div>
+            <div class="upload-zone-label" style="color:#7dd3fc">🎵 Click to choose Audio</div>
             <div id="song-audio-preview"></div>
           </div>
           <input type="text" id="song-duration-manual" placeholder="Duration (optional, e.g. 3:45)" style="margin-top:.5rem">
         </div>
 
+        <div class="form-group full"><label>Song Bio / Story</label><textarea id="new-song-bio" placeholder="Story behind the track..."></textarea></div>
+
+        <div class="form-group full">
+          <label>Credits & Contributions</label>
+          <div id="credits-list-container"></div>
+          <button class="btn btn-secondary btn-xs" onclick="addCreditRow()">+ Add Credit</button>
+        </div>
+
         <div class="form-group full"><label>Song Art (optional)</label>
           <div class="upload-zone"><input type="file" accept="image/*" id="song-art-file" onchange="previewSongArt(this)">
           <div class="upload-zone-label">🖼 Click to upload art</div>
-          <div class="upload-zone-sub">JPG, PNG, WEBP — uses album art if blank</div>
+          <div class="upload-zone-sub">Uses album art if blank</div>
           <div id="song-art-preview"></div></div>
         </div>
       </div>
       <div id="songs-form-msg" style="margin-top:.5rem"></div>
-      <button class="btn btn-primary btn-sm" id="btn-add-song" style="margin-top:.85rem" onclick="addSong()">Upload & Add Song</button>
+      <div style="display:flex;gap:.5rem;margin-top:.85rem">
+        <button class="btn btn-primary btn-sm" id="btn-add-song" onclick="saveSong()">Upload & Save</button>
+        <button class="btn btn-secondary btn-sm hidden" id="btn-cancel-song-edit" onclick="cancelSongEdit()">Cancel Edit</button>
+      </div>
     </div>
-    <table><thead><tr><th>Art</th><th>Title</th><th>Artists</th><th>Album</th><th>Duration</th><th>Audio</th><th></th></tr></thead>
+    <table><thead><tr><th>Art</th><th>Title</th><th>Profiles</th><th>Exp</th><th></th></tr></thead>
     <tbody>${DB.songs.map(s=>{
       const alb=getAlbum(s.albumId);
       const thumb=s.artUrl||(alb?alb.artUrl:null);
       return`<tr>
         <td>${thumb?`<img src="${thumb}" style="width:32px;height:32px;border-radius:5px;object-fit:cover">`:' 🎵'}</td>
         <td>${s.title}</td>
-        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${songArtistNames(s)}</td>
-        <td>${alb?alb.title:'—'}</td><td>${s.duration||'—'}</td>
-        <td>${s.audioUrl?`<span style="color:var(--success);font-size:.72rem">✓</span>`:`<span style="color:var(--text3);font-size:.72rem">—</span>`}</td>
-        <td><button class="btn btn-danger btn-xs" onclick="deleteSong('${s.id}')">Delete</button></td>
+        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${getProfileNames(s.profileIds)}</td>
+        <td>${s.isExplicit?'<span style="color:var(--danger)">E</span>':'-'}</td>
+        <td>
+          <button class="btn btn-secondary btn-xs" onclick="editSong('${s.id}')">Edit</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteSong('${s.id}')">Del</button>
+        </td>
       </tr>`;}).join('')}</tbody></table>`;
+  
   buildArtistPicker('song-artist-picker',[]);
+  buildProfilePicker('new-song-prof-picker', ['default']);
+  renderCreditsUI();
 }
+
+function renderCreditsUI() {
+  const container = document.getElementById('credits-list-container');
+  if(!container) return;
+  const artistsOpts = `<option value="">No link (Text only)</option>` + DB.artists.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  container.innerHTML = activeCredits.map((c, i) => `
+    <div class="credit-row">
+      <input type="text" id="cred-role-${i}" value="${c.role}" placeholder="Role (e.g. Producer)" style="flex:1">
+      <input type="text" id="cred-name-${i}" value="${c.name}" placeholder="Name" style="flex:1">
+      <select id="cred-artist-${i}" style="flex:1"><option value="${c.artistId||''}">${c.artistId ? getArtist(c.artistId)?.name || 'Linked' : 'No link'}</option>${artistsOpts}</select>
+      <button class="btn btn-danger btn-xs" onclick="removeCreditRow(${i})">X</button>
+    </div>
+  `).join('');
+}
+function gatherCredits() {
+  const creds = [];
+  for(let i=0; i<activeCredits.length; i++) {
+    const role = document.getElementById(`cred-role-${i}`).value.trim();
+    const name = document.getElementById(`cred-name-${i}`).value.trim();
+    const artistId = document.getElementById(`cred-artist-${i}`).value;
+    if(role && name) creds.push({role, name, artistId: artistId || null});
+  }
+  return creds;
+}
+function addCreditRow() { activeCredits = gatherCredits(); activeCredits.push({role:'', name:'', artistId:null}); renderCreditsUI(); }
+function removeCreditRow(i) { activeCredits = gatherCredits(); activeCredits.splice(i, 1); renderCreditsUI(); }
+
 function previewSongAudio(input){
   if(!input.files[0])return;
   selectedSongAudioFile = input.files[0];
@@ -1424,55 +1955,76 @@ function previewSongArt(input){
   });
 }
 
-async function addSong(){
+function editSong(id) {
+  const s = getSong(id); if(!s) return;
+  editingSongId = id;
+  document.getElementById('song-form-title').textContent = 'Edit Song';
+  document.getElementById('new-song-title').value = s.title;
+  document.getElementById('new-song-album').value = s.albumId || '';
+  document.getElementById('new-song-bio').value = s.bio || '';
+  document.getElementById('song-duration-manual').value = s.duration || '';
+  document.getElementById('new-song-exp').checked = s.isExplicit || false;
+  
+  buildProfilePicker('new-song-prof-picker', s.profileIds || ['default']);
+  buildArtistPicker('song-artist-picker', s.artistIds || [s.artistId]);
+  
+  activeCredits = s.credits ? [...s.credits] : []; renderCreditsUI();
+
+  document.getElementById('song-audio-preview').innerHTML = s.audioUrl ? `<div class="upload-preview-audio">Current Audio is preserved</div>` : '';
+  document.getElementById('song-art-preview').innerHTML = s.artUrl ? `<img src="${s.artUrl}" class="upload-preview">` : '';
+  selectedSongAudioFile = null; selectedSongArtFile = null;
+  
+  document.getElementById('btn-add-song').textContent = 'Update Song';
+  document.getElementById('btn-cancel-song-edit').classList.remove('hidden');
+  document.getElementById('song-form-card').scrollIntoView({behavior:'smooth'});
+}
+function cancelSongEdit() { editingSongId = null; activeCredits = []; renderAdminSongs(); }
+
+async function saveSong(){
   const title=document.getElementById('new-song-title').value.trim();
   const albumId=document.getElementById('new-song-album').value;
+  const bio = document.getElementById('new-song-bio').value.trim();
   const dur = document.getElementById('song-duration-manual').value.trim();
+  const profs = getProfilePickerValues('new-song-prof-picker');
+  const isExp = document.getElementById('new-song-exp').checked;
   const artistIds=[...pickerSelectedIds];
+  const finalCredits = gatherCredits();
   
   if(!title) return showMsg('songs-form-msg','Title is required.');
-  if(!selectedSongAudioFile) return showMsg('songs-form-msg','Please select an audio file.');
   if(artistIds.length===0) return showMsg('songs-form-msg','Please select at least one artist.');
+  if(!editingSongId && !selectedSongAudioFile) return showMsg('songs-form-msg','Please select an audio file.');
   
   const btn = document.getElementById('btn-add-song');
-  btn.disabled = true;
-  btn.textContent = 'Uploading Audio (Please wait)...';
+  btn.disabled = true; btn.textContent = 'Saving...';
 
   try {
-    // 1. Upload Audio
-    const audioUrl = await uploadFileToFirebase(selectedSongAudioFile, 'songs_audio');
-    
-    // 2. Upload Art (if provided)
+    let audioUrl = null;
+    if (selectedSongAudioFile) audioUrl = await uploadFileToFirebase(selectedSongAudioFile, 'songs_audio');
     let artUrl = null;
-    if (selectedSongArtFile) {
-      btn.textContent = 'Uploading Artwork...';
-      artUrl = await uploadFileToFirebase(selectedSongArtFile, 'songs_art');
-    }
+    if (selectedSongArtFile) artUrl = await uploadFileToFirebase(selectedSongArtFile, 'songs_art');
 
     const alb=getAlbum(albumId);
-    DB.songs.push({
-      id:'s'+Date.now(),title,
-      artistIds,
-      artistId:artistIds[0],
-      albumId,
-      audioUrl: audioUrl,
-      artUrl: artUrl,
-      albumArtUrl:alb?alb.artUrl:null,
-      duration:dur,emoji:'🎵'
-    });
     
-    selectedSongAudioFile=null;
-    selectedSongArtFile=null;
-    saveDB();
-    showMsg('songs-form-msg','Song successfully uploaded and added!','ok');
+    if (editingSongId) {
+      const s = getSong(editingSongId);
+      s.title = title; s.albumId = albumId; s.bio = bio; s.duration = dur; s.artistIds = artistIds; s.artistId = artistIds[0];
+      s.credits = finalCredits; s.profileIds = profs; s.isExplicit = isExp; s.albumArtUrl = alb ? alb.artUrl : null;
+      if (audioUrl) s.audioUrl = audioUrl;
+      if (artUrl) s.artUrl = artUrl;
+      editingSongId = null;
+    } else {
+      DB.songs.push({
+        id:'s'+Date.now(),title, artistIds, artistId:artistIds[0], albumId, audioUrl: audioUrl, artUrl: artUrl,
+        albumArtUrl:alb?alb.artUrl:null, duration:dur, bio: bio, credits: finalCredits, profileIds: profs, isExplicit: isExp, emoji:'🎵', streams:0
+      });
+    }
+    
+    selectedSongAudioFile=null; selectedSongArtFile=null; activeCredits=[];
+    saveDB(false); showMsg('songs-form-msg','Song saved!','ok');
     setTimeout(()=>renderAdminSongs(),1000);
-  } catch (error) {
-    showMsg('songs-form-msg', 'Upload failed: ' + error.message);
-    btn.disabled = false;
-    btn.textContent = 'Upload & Add Song';
-  }
+  } catch (error) { showMsg('songs-form-msg', 'Upload failed: ' + error.message); btn.disabled = false; btn.textContent = 'Upload & Save'; }
 }
-function deleteSong(id){DB.songs=DB.songs.filter(x=>x.id!==id);saveDB();renderAdminSongs();}
+function deleteSong(id){DB.songs=DB.songs.filter(x=>x.id!==id);saveDB(false);renderAdminSongs();}
  
 // ---- CODES ----
 function renderAdminCodes(){
@@ -1482,7 +2034,7 @@ function renderAdminCodes(){
     <div class="form-card">
       <h3>Generate Code</h3>
       <div style="display:flex;gap:.65rem;align-items:flex-end">
-        <div style="flex:1"><label>Custom code (blank = auto-generate)</label><input type="text" id="new-code-input" placeholder="e.g. FRIEND2025" style="text-transform:uppercase;margin-bottom:0"></div>
+        <div style="flex:1"><label>Custom code (blank = auto)</label><input type="text" id="new-code-input" placeholder="e.g. VIP2025" style="text-transform:uppercase;margin-bottom:0"></div>
         <button class="btn btn-primary btn-sm" style="height:38px" onclick="addCode()">Generate</button>
       </div>
       <div id="code-form-msg" style="margin-top:.45rem"></div>
@@ -1492,7 +2044,7 @@ function renderAdminCodes(){
       <td><span class="code-box">${c.code}</span></td>
       <td><span class="tag ${c.used?'tag-used':'tag-active'}">${c.used?'Used':'Active'}</span></td>
       <td style="color:var(--text3)">${c.usedBy||'—'}</td>
-      <td><button class="btn btn-danger btn-xs" onclick="deleteCode('${c.code}')">Delete</button></td>
+      <td><button class="btn btn-danger btn-xs" onclick="deleteCode('${c.code}')">Del</button></td>
     </tr>`).join('')}</tbody></table>`;
 }
 function addCode(){
@@ -1500,27 +2052,33 @@ function addCode(){
   if(!code) code='CODE'+Math.random().toString(36).substring(2,7).toUpperCase();
   if(DB.accessCodes.find(x=>x.code===code)) return showMsg('code-form-msg','Code already exists.');
   DB.accessCodes.push({code,used:false,usedBy:null});
-  saveDB();
-  showMsg('code-form-msg','Code added: '+code,'ok');
-  setTimeout(()=>renderAdminCodes(),700);
+  saveDB(false); showMsg('code-form-msg','Code added: '+code,'ok'); setTimeout(()=>renderAdminCodes(),700);
 }
-function deleteCode(code){DB.accessCodes=DB.accessCodes.filter(x=>x.code!==code);saveDB();renderAdminCodes();}
+function deleteCode(code){DB.accessCodes=DB.accessCodes.filter(x=>x.code!==code);saveDB(false);renderAdminCodes();}
  
-// ---- USERS ----
+// ---- USERS (Req 1) ----
 function renderAdminUsers(){
   const el=document.getElementById('admin-panel-users');
   el.innerHTML=`
     <div class="section-header"><h2>Users</h2></div>
-    ${!DB.users.length?`<div class="empty-state"><div class="empty-icon">👥</div><div>No registered users yet.</div></div>`:`
-    <table><thead><tr><th>Username</th><th>Code Verified</th><th>Playlists</th><th></th></tr></thead>
+    ${!DB.users.length?`<div class="empty-state">No registered users yet.</div>`:`
+    <table><thead><tr><th>Username</th><th>Profile Access</th><th>Verified</th><th></th></tr></thead>
     <tbody>${DB.users.map(u=>`<tr>
       <td>${u.username}</td>
+      <td>
+        <select style="width:140px;padding:.3rem;margin:0" onchange="changeUserProfile('${u.id}', this.value)">
+          ${getProfileOptionsHTML(u.profileId || 'default')}
+        </select>
+      </td>
       <td><span class="tag ${u.codeUsed?'tag-active':'tag-used'}">${u.codeUsed?'Yes':'No'}</span></td>
-      <td>${DB.playlists.filter(p=>p.userId===u.id).length}</td>
-      <td><button class="btn btn-danger btn-xs" onclick="deleteUser('${u.id}')">Delete</button></td>
+      <td><button class="btn btn-danger btn-xs" onclick="deleteUser('${u.id}')">Del</button></td>
     </tr>`).join('')}</tbody></table>`}`;
 }
-function deleteUser(id){DB.users=DB.users.filter(x=>x.id!==id);saveDB();renderAdminUsers();}
+function changeUserProfile(userId, profileId) {
+  const u = DB.users.find(x => x.id === userId);
+  if(u) { u.profileId = profileId; saveDB(false); showToast('User profile updated', 'ok'); }
+}
+function deleteUser(id){DB.users=DB.users.filter(x=>x.id!==id);saveDB(false);renderAdminUsers();}
  
 // ---- SETTINGS ----
 function renderAdminSettings(){
@@ -1536,20 +2094,7 @@ function renderAdminSettings(){
       <div class="form-group" style="margin-bottom:1rem"><label>Confirm New Password</label><input type="password" id="set-admin-new2" placeholder="confirm new password"></div>
       <button class="btn btn-primary btn-sm" onclick="changeAdminPassword()">Update Password</button>
     </div>
-    <div class="form-card" style="max-width:480px;margin-top:1rem">
-      <h3>Change Admin Username</h3>
-      <div id="settings-user-msg"></div>
-      <div class="form-group" style="margin-bottom:.85rem"><label>Current Password</label><input type="password" id="set-user-pass" placeholder="current password"></div>
-      <div class="form-group" style="margin-bottom:1rem"><label>New Username</label><input type="text" id="set-user-new" placeholder="new username"></div>
-      <button class="btn btn-primary btn-sm" onclick="changeAdminUsername()">Update Username</button>
-    </div>
-    <div class="form-card" style="max-width:480px;margin-top:1rem;border-color:rgba(251,191,36,.2)">
-      <h3 style="color:var(--warn)">Reset Admin Password</h3>
-      <p style="font-size:.82rem;color:var(--text3);margin-bottom:.85rem">Resets admin password to <code style="color:var(--text2)">admin123</code> and username to <code style="color:var(--text2)">admin</code>. Use only if locked out.</p>
-      <div id="settings-reset-msg"></div>
-      <div class="form-group" style="margin-bottom:1rem"><label>Type RESET to confirm</label><input type="text" id="reset-confirm-word" placeholder="RESET" style="text-transform:uppercase"></div>
-      <button class="btn btn-warn btn-sm" onclick="hardResetAdmin()">Reset to Default</button>
-    </div>`;
+  `;
 }
 function changeAdminPassword(){
   const curUser=document.getElementById('set-admin-user').value.trim();
@@ -1561,36 +2106,16 @@ function changeAdminPassword(){
   if(nw!==nw2) return showMsg('settings-msg','New passwords do not match.');
   if(nw.length<6) return showMsg('settings-msg','Password must be at least 6 characters.');
   DB.admin.password=nw;
+  
+  const sa = savedAccounts.find(x => x.type === 'admin');
+  if(sa) { sa.password = nw; saveLocalAccounts(); }
+
   document.getElementById('set-admin-cur').value='';
   document.getElementById('set-admin-new').value='';
   document.getElementById('set-admin-new2').value='';
-  saveDB();
-  showMsg('settings-msg','Password updated!','ok');
+  saveDB(false); showMsg('settings-msg','Password updated!','ok');
 }
-function changeAdminUsername(){
-  const pass=document.getElementById('set-user-pass').value;
-  const newUser=document.getElementById('set-user-new').value.trim();
-  if(!pass||!newUser) return showMsg('settings-user-msg','Please fill in all fields.');
-  if(pass!==DB.admin.password) return showMsg('settings-user-msg','Incorrect password.');
-  DB.admin.username=newUser;
-  document.getElementById('set-user-pass').value='';
-  document.getElementById('set-user-new').value='';
-  saveDB();
-  showMsg('settings-user-msg','Username updated to "'+newUser+'"!','ok');
-}
-function hardResetAdmin(){
-  const word=document.getElementById('reset-confirm-word').value.trim().toUpperCase();
-  if(word!=='RESET') return showMsg('settings-reset-msg','Type RESET in the box to confirm.','warn');
-  DB.admin.username='admin';
-  DB.admin.password='admin123';
-  document.getElementById('reset-confirm-word').value='';
-  saveDB();
-  showMsg('settings-reset-msg','Admin reset to admin / admin123.','ok');
-}
- 
-// ============================================================
-// STARTUP
-// ============================================================
+
 document.addEventListener('DOMContentLoaded', () => startup());
 </script>
  
