@@ -545,11 +545,13 @@ tr:active td{background:var(--bg3)}
 <div id="toast" class="hidden toast"></div>
 
 <script type="module">
+  // 1. Core SDK Modular Imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
 
+  // 2. Your Verified Active Firebase Project Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyAzZFWx0u24TJ0tPGimPCGiJJUY6TB_uq4",
     authDomain: "jooser-app.firebaseapp.com",
@@ -559,16 +561,90 @@ tr:active td{background:var(--bg3)}
     appId: "1:72994376813:web:76043f3c6e9f26105f0364"
   };
 
+  // Initialize Application Instances
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
   const storage = getStorage(app);
 
+  // Maintain your existing global shortcut reference object
   window.fb = {
     auth, signIn: signInWithEmailAndPassword, signUp: createUserWithEmailAndPassword, signOut,
     db, doc, setDoc, getDoc, onSnapshot,
     storage, ref, uploadBytes, getDownloadURL
   };
+
+  // 3. Modernized Login Handler Function
+  async function doLogin() {
+    const userEl = document.getElementById('login-user');
+    const passEl = document.getElementById('login-pass');
+    
+    if (!userEl || !passEl) return;
+    const username = userEl.value.trim();
+    const password = passEl.value;
+
+    if (!username || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    if (username === 'admin') {
+      console.log("Routing authentication validation over local fallback channel...");
+      return;
+    }
+
+    try {
+      // Convert standard username to email string layout format required by Firebase
+      const email = username.includes('@') ? username : `${username}@jooser.local`;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      console.log("Handshake successful. Authenticated profile payload:", userCredential.user);
+      
+      if (typeof loginSuccess === 'function') {
+        loginSuccess(username);
+      }
+      
+    } catch (error) {
+      console.error("Authentication handshake failure:", error.message);
+      alert("Authentication failed: " + error.message);
+    }
+  }
+
+  // 4. Modernized Account Creation Handler Function
+  async function doSignup() {
+    const username = document.getElementById('signup-user').value.trim();
+    const pass = document.getElementById('signup-pass').value;
+    const pass2 = document.getElementById('signup-pass2').value;
+
+    if (!username || !pass || !pass2) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    if (pass !== pass2) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    try {
+      const email = `${username}@jooser.local`;
+      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      
+      // Store structural properties to the active database collection
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        username: username,
+        createdAt: new Date().toISOString()
+      });
+
+      alert("Account created successfully! Please log in.");
+      if (typeof switchTab === 'function') switchTab('login');
+    } catch (error) {
+      alert("Signup error: " + error.message);
+    }
+  }
+
+  // 5. Global Execution Bindings
+  window.doLogin = doLogin;
+  window.doSignup = doSignup;
 </script>
 
 <script>
